@@ -2,7 +2,7 @@ import  express  from "express";
 import bodyParser from "body-parser";
 import cors from 'cors';
 // import routes from './src/routes/routes.js'
-import mongoose from "./src/config/config.js";
+import connect from "./src/config/config.js";
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.listen(PORT , () => {
+    connect()
     console.log(`running on port ${PORT}`)
 })
 app.use(cors());

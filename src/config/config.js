@@ -5,11 +5,12 @@ dotenv.config()
 const URL = process.env.URL 
 const PORT = process.env.PORT
 
-mongoose.connect(URL, {
-    useNewUrlParser: true, 
-    // useUnifiedTypology:true
-})
-.then(()=> ()=> console.log(`Server running on port: ${PORT}`))
-.catch((error)=> console.log(error.message))
-
-export default mongoose;
+const connect = async () => {
+    try {
+      await mongoose.connect(URL);
+      console.log("Connected to mongoDB");
+    } catch (error) {
+      throw error;
+    }
+  };
+export default connect;
