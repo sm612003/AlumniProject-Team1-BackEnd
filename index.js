@@ -1,7 +1,7 @@
 import  express  from "express";
 import bodyParser from "body-parser";
 import cors from 'cors';
-// import routes from './src/routes/routes.js'
+import router from './src/routes/routes.js'
 import connect from "./src/config/config.js";
 import dotenv from 'dotenv'
 
@@ -24,4 +24,4 @@ app.listen(PORT , () => {
     console.log(`running on port ${PORT}`)
 })
 app.use(cors());
-// app.use("/posts", routes)
+app.use("/", router)

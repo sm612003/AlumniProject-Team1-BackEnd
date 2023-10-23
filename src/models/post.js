@@ -9,18 +9,27 @@ const postSchema= mongoose.Schema({
         type:String,
         required:true
     },
-    date:{
-        type:Date,
-        default:Date.now
-    },
+    // date:{
+    //     type:Date,
+    //     default:Date.now
+    // },
     content:{
         type:String,
         required:true,
     },
     image:{
-        type:String
+        type:String,
+        required: false 
+    }, 
+    categoryID:{
+        type :String,
+        required:true,
+        unique:true
     }
-})
+},{
+    timestamps : true
+}
+)
 
 const PostMessage= mongoose.model("PostMessage", postSchema)
 
