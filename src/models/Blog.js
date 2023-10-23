@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const postSchema= mongoose.Schema({
+const blogSchema = mongoose.Schema({
     full_name:{
         type:String,
         required:true
@@ -9,10 +9,6 @@ const postSchema= mongoose.Schema({
         type:String,
         required:true
     },
-    // date:{
-    //     type:Date,
-    //     default:Date.now
-    // },
     content:{
         type:String,
         required:true,
@@ -31,6 +27,6 @@ const postSchema= mongoose.Schema({
 }
 )
 
-const PostMessage= mongoose.model("PostMessage", postSchema)
+const Blog = mongoose.model("Blog", blogSchema)
 
-export default PostMessage
+export default Blog 
