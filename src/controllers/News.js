@@ -131,3 +131,23 @@ export const updateNews = async (req, res) => {
     });
   }
 };
+
+// filter by categoryID 
+export const getNewsByCategory = async (req , res) => {
+  const {categoryID} = req.params 
+  try {
+    const newsInCategory = await News.find({categoryID})
+
+    if(newsInCategory.length === 0){
+      res.status(404).json({
+        message:  'No news found for this category'
+      })
+    }
+
+    res.status(200).json(newsInCategory) 
+  } catch (error){
+    res.status(500).json({
+      error : 'Error finding news'
+    })
+  }
+}
