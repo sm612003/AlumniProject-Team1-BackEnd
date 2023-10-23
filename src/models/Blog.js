@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const blogSchema = mongoose.Schema({
-    full_name:{
+    author:{
         type:String,
         required:true
     },

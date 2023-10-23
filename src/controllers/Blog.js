@@ -19,12 +19,12 @@ export const addBlog = async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
 
-    const { full_name, title, content, categoryID } = req.body;
+    const { author, title, content, categoryID } = req.body;
     const image = req.file.path;
 
     try {
       const blog = new Blog({
-        full_name,
+        author,
         title,
         content,
         image,
