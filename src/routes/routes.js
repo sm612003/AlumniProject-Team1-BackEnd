@@ -1,6 +1,6 @@
 import express from 'express'
 import { getAllBlogs, getBlogById, deleteBlog, addBlog } from '../controllers/Blog.js'
-import { getAllNews , getNewsById , deleteNews , updateNews , addNews} from '../controllers/News.js';
+import { getAllNews , getNewsById , deleteNews , updateNews , addNews , getNewsByCategory} from '../controllers/News.js';
 import { getAllNewsletters, getNewsletterById , addNewsletter , deleteNewsletterById } from '../controllers/Newsletter.js';
 import { getAllSubscribedUser, getAllSubscribedUserById , addSubscribedUser , deleteSubscribedUserById } from '../controllers/subscribedUser.js';
 import { getAllCategories, getCategoryById , deleteCategoryById , addCategory } from '../controllers/Category.js';
@@ -14,6 +14,7 @@ router.post('/add/blogs', addBlog ) ;
 router.get('read/blogs/:id', getBlogById);
 // router.get('/:id', findByCategory);
 router.delete('delete/blogs/:id', deleteBlog);
+// router.get('/read/blogs/byCategory/:id', getBlogsByCategory)
 
 
 // routers for news 
@@ -22,6 +23,7 @@ router.get('/read/news/:id', getNewsById);
 router.post('/add/news', addNews);
 router.put('/update/news/:id', updateNews);
 router.delete('/delete/news/:id' , deleteNews)
+router.get('/read/news/byCategory/:id' ,getNewsByCategory)
 
 
 // routers for newsletter 
