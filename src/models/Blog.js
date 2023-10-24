@@ -17,10 +17,9 @@ const blogSchema = mongoose.Schema({
         type:String,
         required: false 
     }, 
-    categoryID:{
+    categoryName:{
         type :String,
         required:true,
-        unique:true
     }
 },{
     timestamps : true
