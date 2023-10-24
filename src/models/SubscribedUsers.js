@@ -6,5 +6,5 @@ const subscribedUserSchema = new Schema({
         required:true, 
         unique: true}
 });
-const SubscribedUser = model('SubsribedUser',subscribedUserSchema);
+const SubscribedUser = model('SubscribedUser',subscribedUserSchema);
 export default SubscribedUser;
