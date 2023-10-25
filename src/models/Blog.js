@@ -17,10 +17,15 @@ const blogSchema = mongoose.Schema({
         type:String,
         required: false 
     }, 
-    categoryName:{
-        type :String,
-        required:true,
-    }
+    // categoryName:{
+    //     type :String,
+    //     required:true,
+    // }
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required:true
+      },
 },{
     timestamps : true
 }

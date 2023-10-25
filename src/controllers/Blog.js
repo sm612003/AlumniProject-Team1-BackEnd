@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from 'fs'
 import exp from "constants";
+import Category from "../models/Category.js";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -20,7 +21,7 @@ export const addBlog = async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
 
-    const { author, title, content, categoryName } = req.body;
+    const { author, title, content, category } = req.body;
     const image = req.file.path;
 
     try {
@@ -29,7 +30,7 @@ export const addBlog = async (req, res) => {
         title,
         content,
         image,
-        categoryName,
+        category,
       });
       const newBlog = await blog.save();
       res.status(200).json(newBlog);
@@ -76,22 +77,19 @@ export const getBlogById = async (req, res) => {
 };
 
 
-
-
-
-export const findBlogByCategory = async (req, res) => {
-  const { categoryName } = req.body;
-  try {
-    const blogsCategory = await Blog.find({ categoryName })
-    if (blogsCategory) {
-      res.status(200).json(blogsCategory)
-    } else {
-      res.status(404).json({ message: "No blogs found" })
-    }
-  } catch (error) {
-    res.json(400).json({ message: error.message })
-  }
-}
+// export const findBlogByCategory = async (req, res) => {
+//   const { category } = req.body;
+//   try {
+//     const blogsCategory = await Blog.find({ category })
+//     if (blogsCategory) {
+//       res.status(200).json(blogsCategory)
+//     } else {
+//       res.status(404).json({ message: "No blogs found" })
+//     }
+//   } catch (error) {
+//     res.json(400).json({ message: error.message })
+//   }
+// }
 
 
 
@@ -104,7 +102,7 @@ export const updateBlog = async (req, res) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
-    // const { author, title, content, categoryName } = req.body;
+    // const { author, title, content, category } = req.body;
 
     try {
 
@@ -125,3 +123,20 @@ export const updateBlog = async (req, res) => {
     }
   })
 };
+
+export const getBlogsByCategory= async (req,res)=>{
+  const categoryName = req.params.name;
+  try{
+    const category = await Category.findOne({name: categoryName})
+    console.log(category)
+    if (!category){
+      return res.status(404).json({message:"category not found"})
+    }
+
+    const blogs= await Blog.find({ category: category._id});
+    res.status(201).json(blogs);
+
+  }catch(error){
+     res.status(500).json({error:error.message})
+  }
+}

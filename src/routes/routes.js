@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAllBlogs, getBlogById, deleteBlog, addBlog, updateBlog } from '../controllers/Blog.js'
+import { getAllBlogs, getBlogById, deleteBlog, addBlog, updateBlog ,getBlogsByCategory} from '../controllers/Blog.js'
 import { getAllNews , getNewsById , deleteNews , updateNews , addNews , getNewsByCategory} from '../controllers/News.js';
 import { getAllNewsletters, getNewsletterById , addNewsletter , deleteNewsletterById } from '../controllers/Newsletter.js';
 import { getAllSubscribedUser, getAllSubscribedUserById , addSubscribedUser , deleteSubscribedUserById } from '../controllers/subscribedUser.js';
@@ -15,6 +15,7 @@ router.get('/read/blogs/:id', getBlogById);
 // router.get('/:id', findByCategory);
 router.delete('/delete/blogs/:id', deleteBlog);
 router.patch('/update/blogs/:id', updateBlog);
+router.get('/read/blogs/:name', getBlogsByCategory);
 // router.get('/read/blogs/byCategory/:id', getBlogsByCategory)
 
 
