@@ -4,6 +4,10 @@ const newsletterSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    validate: {
+      validator: (name) => name.length >= 3, // For example, require at least 3 characters
+      message: "Name must be at least 3 characters long.",
+    },
   },
   news: [
     {
@@ -13,8 +17,8 @@ const newsletterSchema = new mongoose.Schema({
   ],
   subscribedUser: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubscribedUser",
+      type: String,
+      unique: true 
     },
   ],
 });
