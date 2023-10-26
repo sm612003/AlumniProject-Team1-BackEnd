@@ -1,20 +1,11 @@
 import Blog from "../models/Blog.js";
-import multer from "multer";
-import path from "path";
-import fs from 'fs'
-import exp from "constants";
 import Category from "../models/Category.js";
+import { upload } from "../middlewares/multer.js";
+import path from "path";
+import fs from "fs"
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, "image-" + Date.now() + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage: storage });
 
+//add blog
 export const addBlog = async (req, res) => {
   upload.single("image")(req, res, async function (err) {
     if (err) {
@@ -30,7 +21,7 @@ export const addBlog = async (req, res) => {
         title,
         content,
         image,
-        category,
+        category: category,
       });
       const newBlog = await blog.save();
       res.status(200).json(newBlog);
@@ -39,20 +30,7 @@ export const addBlog = async (req, res) => {
     }
   });
 };
-
-export const deleteBlog = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    await Blog.findByIdAndRemove(id);
-    res.status(200).json({ message: "Blog post deleted successfully" });
-  } catch (error) {
-    res
-      .status(404)
-      .json({ message: "Blog post not found or could not be deleted" });
-  }
-};
-
+//get the blogs
 export const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find().sort({ createdAt: -1 });
@@ -62,8 +40,10 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
+//get blog by id
+
 export const getBlogById = async (req, res) => {
-  const { id } = req.params;
+  const  id  = req.body.id;
   try {
     const blog = await Blog.findById(id);
     if (blog) {
@@ -76,28 +56,25 @@ export const getBlogById = async (req, res) => {
   }
 };
 
+//delete blog by id
 
-// export const findBlogByCategory = async (req, res) => {
-//   const { category } = req.body;
-//   try {
-//     const blogsCategory = await Blog.find({ category })
-//     if (blogsCategory) {
-//       res.status(200).json(blogsCategory)
-//     } else {
-//       res.status(404).json({ message: "No blogs found" })
-//     }
-//   } catch (error) {
-//     res.json(400).json({ message: error.message })
-//   }
-// }
+export const deleteBlog = async (req, res) => {
+  const { id } = req.body;
 
+  try {
+    await Blog.findByIdAndRemove(id);
+    res.status(200).json({ message: "Blog post deleted successfully" });
+  } catch (error) {
+    res
+      .status(404)
+      .json({ message: "Blog post not found or could not be deleted" });
+  }
+};
 
-
-
-
+//update the blog by id
 
 export const updateBlog = async (req, res) => {
-  const { id } = req.params;
+  const  id  = req.body.id;
   upload.single("image")(req, res, async function (err) {
     if (err) {
       return res.status(400).json({ error: err.message });
@@ -124,6 +101,8 @@ export const updateBlog = async (req, res) => {
   })
 };
 
+//filter by category
+
 export const getBlogsByCategory= async (req,res)=>{
   const categoryName = req.params.name;
   try{
@@ -140,3 +119,47 @@ export const getBlogsByCategory= async (req,res)=>{
      res.status(500).json({error:error.message})
   }
 }
+
+// export const updateBlog = async (req, res) => {
+//   const  id  = req.body.id;
+//   console.log(id)
+//   // Validation for he type of the news ID
+//   if(!mongoose.Types.ObjectId.isValid(id)){
+//     return res.status(404).json({
+//       error: "News not found"
+//     })
+//   }
+//   // Fetch the current news post
+//   const newBlog = await Blog.findById(id)
+//   // Delete the image from the local folder
+//   fs.unlink(newBlog.image , (err)=> {
+//     if(err){
+//       return res.status(500).json({
+//         error: `error updating the photo`
+//       })
+//     }
+//   })
+//   // Handle file upload and potential errors
+//   upload.single('image')(req, res, async function (err){
+//     if (err) {
+//       return res.status(400).json({ error: err.message });
+//     }    
+//     try {
+//       // Extract updated data from the request
+//       const updatedData = req.body 
+//       const image = req.file.path ;
+//       updatedData.image = image ;
+//       // Update the news post and respond with the updated data
+//       const blogs = await Blog.findByIdAndUpdate(
+//         {_id: id},
+//         updatedData,
+//         {new: true}
+//       )
+//       return res.json(blogs)   
+//     } catch (error){
+//     return res.status(500).json({
+//       error : `Error, ${error.message}` 
+//     })
+//     }   
+//   })
+// };
