@@ -1,51 +1,104 @@
 //const Category = require('./CategoryModel');
-
+import mongoose from "mongoose";
 import Category from "../models/Category.js";
-
+//here we are exporting an asynchronous function  named getAllCategories
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    //this code aims to find all categories
+    const categories = await Category.find().sort({name : 1});
+    //if the categories are found it will return the list of categories with a 200 status
     res.status(200).json(categories);
   } catch (error) {
+    //if an error occurs, an error message will be returned with a 404 status
     res.status(404).json({ message: error.message });
   }
 };
 
-
+//here we are exporting an asynchronous function  named getCategoryById
 export const getCategoryById = async (req, res) => {
-  const { categoryId } = res.params;
+  //extracting the id from the request body 
+  const id = req.body.id;
   try {
-    const category = await Category.findById(categoryId);
+    console.log(id)
+    //checking if the provided categoryId is a valid mongodb objectID
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      //If not valid, respond with a 400 status and an error message
+      return res.status(400).json({ message: 'Invalid category ID' });
+    }
+    //this code aims to find a category by the provided ID
+    const category = await Category.findById(id);
+    //if category is found respond with a 200 status with the provided ID
     res.status(200).json(category);
   } catch (error) {
+    //If an error occurs, respond with a 404 status and an error message
     res.status(404).json({ message: error.message });
   }
 };
+
+// Exporting an asynchronous function named 'getCategoryByName'
+export const getCategoryByName = async ( req , res) => {
+  // Extracting 'categoryName' from the request body
+  const categoryName = req.body.categoryName
+  try{
+    //this code aims to find a category by its name
+    const category = await Category.findOne({name: categoryName});
+    // If category is not found, respond with a 404 status and an error message
+    if(!category){
+      return res.status(404).json({message: "Category not found"});
+    }
+    // If category is found, respond with a 200 status and the category object
+    return res.status(200).json(category);
+  }
+  catch(error){
+    // If an error occurs, respond with a 500 status and an error message
+    return res.status(500).json({message: error.message});
+
+  }
+}
 
 
 export const addCategory = async (req, res) => {
   console.log("POST");
-  const { name } = req.body;
+  // Extracting 'name' from the request body
+  const name = req.body.name ;
   try {
+    console.log(name)
+    // Check if 'name' is provided, is a string, and is not empty
+    if (!name || typeof(name) != 'string') {
+      return res.status(400).json({ error: 'Name is required and must be a non-empty string' });
+    }
+    // Create a new category using the provided 'name'
     const newCategory = new Category({ name });
+    // Save the new category to the database
     await newCategory.save();
+    // Respond with a 200 status and the newly created category
     res.status(200).json(newCategory);
   } catch (error) {
+    // If an error occurs, respond with a 500 status and an error message
     res.status(500).json({ error: "error adding category" });
+    // Log the error for further investigation
     console.log(error);
   }
 };
 
-
+// Exporting an asynchronous function named 'deleteCategoryById'
 export const deleteCategoryById = async (req, res) => {
-  const { id } = req.params;
+  // Extracting 'id' from the request body
+  const id = req.body.id;
   try {
+    // Attempt to find and delete a category by its ID
     const deleteCategory = await Category.findByIdAndDelete(id);
+    // If category is not found, respond with a 404 status and an error message
     if (!deleteCategory) {
       return res.status(404).json({ message: "Category not found" });
     }
-    res.status(200).json({ message: `Category  deleted successfully` });
+    // If category is found and deleted, respond with a 200 status and a success message
+    return res.status(200).json({ 
+      message: `Category  deleted successfully`,
+      data : deleteCategory
+    });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    // If an error occurs, respond with a 404 status and an error message
+    return res.status(404).json({ message: error.message });
   }
 };
