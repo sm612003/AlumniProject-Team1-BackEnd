@@ -1,21 +1,29 @@
+import mongoose from "mongoose";
 import Blog from "../models/Blog.js";
 import Category from "../models/Category.js";
-import { upload } from "../middlewares/multer.js";
-import path from "path";
 import fs from "fs"
 
 
 //add blog
 export const addBlog = async (req, res) => {
-  upload.single("image")(req, res, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-
-    const { author, title, content, category } = req.body;
+  try {
+    const { 
+      author, 
+      title, 
+      content, 
+      category 
+    } = req.body;
     const image = req.file.path;
 
-    try {
+    if(!author || !title || !content || !category){
+      return res.json({
+        error: "Please provide all required data"
+      })
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload an image" });
+    }
       const blog = new Blog({
         author,
         title,
@@ -24,19 +32,29 @@ export const addBlog = async (req, res) => {
         category: category,
       });
       const newBlog = await blog.save();
-      res.status(200).json(newBlog);
+      return res.status(200).json({
+        message : `Blog ${newBlog.title} is added successfuly`,
+        data : newBlog
+      });
     } catch (error) {
-      res.status(409).json({ message: error.message });
+      return res.status(500).json({
+         message: error.message 
+        });
     }
-  });
-};
+  } ;
+  
 //get the blogs
 export const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find().sort({ createdAt: -1 });
+    if(!blogs){
+      return res.json({
+        error : "No blogs found"
+      })
+    }
     res.status(200).json(blogs);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -45,46 +63,83 @@ export const getAllBlogs = async (req, res) => {
 export const getBlogById = async (req, res) => {
   const  id  = req.body.id;
   try {
+        // Validation for he type of the blog id
+        if(!mongoose.Types.ObjectId.isValid(id)){
+          return res.status(404).json({
+            error: "News not found"
+          })
+        }
+
     const blog = await Blog.findById(id);
     if (blog) {
-      res.status(200).json(blog);
+      return res.status(200).json(blog);
     } else {
-      res.status(404).json({ message: "Blog not found" });
+      return res.status(404).json({ message: "Blog not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 //delete blog by id
-
 export const deleteBlog = async (req, res) => {
-  const { id } = req.body;
-
+  const id = req.body.id;
   try {
-    await Blog.findByIdAndRemove(id);
-    res.status(200).json({ message: "Blog post deleted successfully" });
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(404).json({
+        error: "Blogs not found"
+      })
+    }
+    const blogg = await Blog.findById(id);
+    if(!blogg){
+      return res.status(404).json({
+        error: "Blogs not found"
+      })
+    }
+
+    fs.unlink(blogg.image , (err) => {
+      if (err){
+        return res.status(500).json({
+          error :`error deleting image: ${err}`
+        })
+      }
+    })
+
+    const deletedBlogs = await Blog.findByIdAndRemove(id)
+    if (!deletedBlogs) {
+      return res.status(404).json({
+        error: "Blog is not found",
+      });
+    }
+    return res.status(200).json({ message: "Blog post deleted successfully" });
   } catch (error) {
-    res
+    return res
       .status(404)
       .json({ message: "Blog post not found or could not be deleted" });
   }
 };
 
-//update the blog by id
-
+//update the blog by id 
 export const updateBlog = async (req, res) => {
   const  id  = req.body.id;
-  upload.single("image")(req, res, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
+  // const { author, title, content, category } = req.body;
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(404).json({
+      error: "Blogs not found"
+    })
+  }
+
+  const blogfirst = await Blog.findById(id)
+  fs.unlink(blogfirst.image , (err)=> {
+    if(err){
+      return res.status(500).json({
+        error: `error updating the photo`
+      })
     }
-    // const { author, title, content, category } = req.body;
-
+  })
     try {
-
       const updatedData = req.body;
-      const image = req.file.path;
+      const image = req.file.path ;
       updatedData.image = image
       // Find the existing blog post by ID
       const updatedBlog = await Blog.findByIdAndUpdate(
@@ -94,72 +149,27 @@ export const updateBlog = async (req, res) => {
       );
 
 
-      res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
+      return res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: error.message });
     }
-  })
-};
+  }
 
 //filter by category
-
+ 
 export const getBlogsByCategory= async (req,res)=>{
-  const categoryName = req.params.name;
+  const categoryName = req.body.categoryName;
   try{
     const category = await Category.findOne({name: categoryName})
     console.log(category)
     if (!category){
-      return res.status(404).json({message:"category not found"})
+      return res.status(404).json({
+        message:"category not found"
+      })
     }
-
     const blogs= await Blog.find({ category: category._id});
     res.status(201).json(blogs);
-
   }catch(error){
      res.status(500).json({error:error.message})
-  }
+  } 
 }
-
-// export const updateBlog = async (req, res) => {
-//   const  id  = req.body.id;
-//   console.log(id)
-//   // Validation for he type of the news ID
-//   if(!mongoose.Types.ObjectId.isValid(id)){
-//     return res.status(404).json({
-//       error: "News not found"
-//     })
-//   }
-//   // Fetch the current news post
-//   const newBlog = await Blog.findById(id)
-//   // Delete the image from the local folder
-//   fs.unlink(newBlog.image , (err)=> {
-//     if(err){
-//       return res.status(500).json({
-//         error: `error updating the photo`
-//       })
-//     }
-//   })
-//   // Handle file upload and potential errors
-//   upload.single('image')(req, res, async function (err){
-//     if (err) {
-//       return res.status(400).json({ error: err.message });
-//     }    
-//     try {
-//       // Extract updated data from the request
-//       const updatedData = req.body 
-//       const image = req.file.path ;
-//       updatedData.image = image ;
-//       // Update the news post and respond with the updated data
-//       const blogs = await Blog.findByIdAndUpdate(
-//         {_id: id},
-//         updatedData,
-//         {new: true}
-//       )
-//       return res.json(blogs)   
-//     } catch (error){
-//     return res.status(500).json({
-//       error : `Error, ${error.message}` 
-//     })
-//     }   
-//   })
-// };

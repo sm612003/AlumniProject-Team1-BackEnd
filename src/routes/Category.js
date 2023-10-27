@@ -4,8 +4,8 @@ import { getAllCategories, getCategoryById , deleteCategoryById , addCategory } 
 const categoryRouter = express.Router();
 
 categoryRouter.get('/read/category', getAllCategories);
-categoryRouter.get('/read/category/:id', getCategoryById);
+categoryRouter.get('/read/categoryById', getCategoryById);
 categoryRouter.post('/add/category', addCategory);
-categoryRouter.delete('/delete/category/:id' , deleteCategoryById)
+categoryRouter.delete('/delete/category' , deleteCategoryById)
 
 export default categoryRouter;

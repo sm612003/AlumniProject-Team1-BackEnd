@@ -3,17 +3,11 @@ import Category from "../models/Category.js";
 import News from "../models/News.js";
 import Newsletter from "../models/Newsletter.js";
 import fs from 'fs'
-import { upload } from "../middlewares/multer.js";
 
 
 // add news
 export const addNews = async (req, res) => {
-  // Handle file upload and potential errors
-  upload.single("image")(req, res, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-  try {
+    try {
      // Extract data from the request
     const {
       title,
@@ -52,16 +46,18 @@ export const addNews = async (req, res) => {
         Category: category,
       });
       // Save the news post and push it to the newsletter array
-      await post.save();
+      const addedNews = await post.save();
       newsletter.news.push(post);
       await newsletter.save()
       // Respond with the newly created post
-      res.status(200).json(post);
+      return res.status(200).json({
+        message : `News ${addedNews.title} is added successfuly`,
+        data : addedNews
+      });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
-  });
-};
+  };
 
 
 
@@ -70,17 +66,22 @@ export const getAllNews = async (req, res) => {
   try {
     // Fetch and sort all news posts by date
     const newsCard = await News.find().sort({ date: -1 });
+    if(!newsCard){
+      return res.json({
+        error : "No News found"
+      })
+    }
     // Respond with the list of news posts
     res.status(200).json(newsCard);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 
 // see a new based on id
 export const getNewsById = async (req, res) => {
-  const { id } = req.body;
+  const id = req.body.id ;
   try {
     // Validation for he type of the news ID
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -104,7 +105,7 @@ export const getNewsById = async (req, res) => {
 
 // delete a news based on id
 export const deleteNews = async (req, res) => {
-  const { id } = req.body;
+  const id = req.body.id ;
   try {
     // Validation for he type of the news ID
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -130,24 +131,24 @@ export const deleteNews = async (req, res) => {
     // Delete the entire news post from database
     const deletedNews = await News.findByIdAndRemove(id);
       if (!deletedNews) {
-      res.status(404).json({
+      return res.status(404).json({
         error: "Newscard is not found",
       });
     }
-    res
+    return res
       .status(200)
       .json({ message: `News ${deletedNews.title} deleted successfully` });
   } catch (error) {
-    res.status(404).json({ message: "Error deleting newscard" });
+    return res.status(404).json({ message: "Error deleting newscard" });
   }
 };
 
 
-// update news
+// update news 
 export const updateNews = async (req, res) => {
-  const { newsid } = req.body;
+  const id = req.body.id;
   // Validation for he type of the news ID
-  if(!mongoose.Types.ObjectId.isValid(newsid)){
+  if(!mongoose.Types.ObjectId.isValid(id)){
     return res.status(404).json({
       error: "News not found"
     })
@@ -162,11 +163,7 @@ export const updateNews = async (req, res) => {
       })
     }
   })
-  // Handle file upload and potential errors
-  upload.single('image')(req, res, async function (err){
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }    
+  // Handle file upload and potential errors   
     try {
       // Extract updated data from the request
       const updatedData = req.body 
@@ -178,19 +175,21 @@ export const updateNews = async (req, res) => {
         updatedData,
         {new: true}
       )
-      return res.json(news)   
+      return res.json({
+        message : `News ${newsfirst.title} is updated successfuly`,
+        data: news
+      })   
     } catch (error){
     return res.status(500).json({
       error : `Error, ${error.message}` 
     })
     }   
-  })
-};
+  };
 
 
 // filter by categoryID 
 export const getNewsByCategory = async (req , res) => {
-  const categoryName = req.params.name
+  const categoryName = req.body.categoryName
   try {
     // Find the category by name
     const category = await Category.findOne({name : categoryName})

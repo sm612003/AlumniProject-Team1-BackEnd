@@ -1,4 +1,5 @@
 import Newsletter from "../models/Newsletter.js";
+import mongoose from "mongoose";
 
 // Get all newsletters
 export const getAllNewsletters = async (req, res) => {
@@ -32,7 +33,7 @@ export const getNewsletterById = async (req, res) => {
 
 // Add a new newsletter
 export const addNewsletter = async (req, res) => {
-  const { name } = req.body;
+  const name = req.body.name;
   try {
     // Create a new newsletter instance
     const newNewsletter = new Newsletter({ name });
@@ -49,7 +50,7 @@ export const addNewsletter = async (req, res) => {
 
 // Delete a newsletter by ID
 export const deleteNewsletterById = async (req, res) => {
-  const { id } = req.body;
+  const id = req.body.id ;
   try {
     // Validation for he type of the news ID
     if(!mongoose.Types.ObjectId.isValid(id)){

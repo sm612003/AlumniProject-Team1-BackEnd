@@ -18,7 +18,15 @@ const newsletterSchema = new mongoose.Schema({
   subscribedUser: [
     {
       type: String,
-      unique: true 
+      unique: true,
+      validate: {
+        validator: (email) => {
+          // Use a regular expression to validate email format
+          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          return emailRegex.test(email);
+        },
+        message: "Invalid email format",
+      },
     },
   ],
 });
