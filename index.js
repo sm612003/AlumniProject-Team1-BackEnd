@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({
     extended:true
 }))
 
-app.use(express.static('images'));
+app.use('/images', express.static(process.cwd() + "/images"))
 
 app.listen(PORT , () => {
     connect()
