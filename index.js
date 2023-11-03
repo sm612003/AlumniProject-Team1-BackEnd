@@ -22,6 +22,8 @@ app.use(bodyParser.urlencoded({
     extended:true
 }))
 
+app.use(express.static('images'));
+
 app.listen(PORT , () => {
     connect()
     console.log(`running on port ${PORT}`)
