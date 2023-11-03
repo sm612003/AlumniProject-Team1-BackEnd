@@ -39,15 +39,15 @@ const newsSchema = new mongoose.Schema({
   },
   subtitle: {
     type: String,
-    required: false,
+    required: true,
     validate: {
       validator: (value) => value.split(' ').length >= 3,
       message: "This field must contain at least 3 words.",
     },
   },
-  subtitleDescrption: {
+  subtitleDescription: {
     type: String,
-    required: false,
+    required: true,
     validate: {
       validator: (value) => value.split(' ').length >= 10,
       message: "This field must contain at least 10 words.",
@@ -55,7 +55,7 @@ const newsSchema = new mongoose.Schema({
   },
   links: {
     type: String,
-    required: false,
+    required: true,
   },
   Category: {
     type : mongoose.Schema.Types.ObjectId,
