@@ -3,6 +3,7 @@ import Category from "../models/Category.js";
 import News from "../models/News.js";
 import Newsletter from "../models/Newsletter.js";
 import fs from 'fs'
+import { log } from "console";
 
 
 // add news
@@ -81,7 +82,7 @@ export const getAllNews = async (req, res) => {
 
 // see a new based on id
 export const getNewsById = async (req, res) => {
-  const id = req.body.id ;
+  const id = req.params.id ;
   try {
     // Validation for he type of the news ID
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -189,7 +190,8 @@ export const updateNews = async (req, res) => {
 
 // filter by categoryID 
 export const getNewsByCategory = async (req , res) => {
-  const categoryName = req.body.categoryName
+  const {categoryName} = req.params
+  log(categoryName)
   try {
     // Find the category by name
     const category = await Category.findOne({name : categoryName})

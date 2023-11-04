@@ -5,11 +5,11 @@ import { upload } from "../middlewares/multer.js";
 const newsRouter =express.Router()
 
 newsRouter.get('/read/news', getAllNews);
-newsRouter.get('/read/newsById', getNewsById);
+newsRouter.get('/read/newsById/:id', getNewsById);
 newsRouter.post('/add/news',  upload.single("image") , addNews);
 newsRouter.patch('/update/news',  upload.single("image") , updateNews);
 newsRouter.delete('/delete/news' , deleteNews)
-newsRouter.get('/read/news/byCategory' ,getNewsByCategory)
+newsRouter.get('/read/news/byCategory/:categoryName' ,getNewsByCategory)
 
 
 export default newsRouter
