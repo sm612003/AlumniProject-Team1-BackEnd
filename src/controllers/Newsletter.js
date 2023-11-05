@@ -89,12 +89,21 @@ export const updateNewsletterEmails = async (req, res) => {
           error: "Newsletter not found"
         });
       }
+      // Check for duplicate email
+      if (newsletter.subscribedUser.includes(email)) {
+        return res.status(400).json({
+          error: "Email already subscribed"
+        });
+      }
       // Push the new email into the subscribedUser array
       newsletter.subscribedUser.push(email);
       // Save the updated newsletter with the new email
       await newsletter.save();
       // Respond with the updated newsletter
-      res.status(200).json(newsletter);
+      res.status(200).json({
+        message: "Email added to newsletter successfully",
+        newsletter
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
