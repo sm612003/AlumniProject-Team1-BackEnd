@@ -61,9 +61,9 @@ export const getAllBlogs = async (req, res) => {
 //get blog by id
 
 export const getBlogById = async (req, res) => {
-  const  id  = req.body.id;
-  try {
-        // Validation for he type of the blog id
+  const  {id}  = req.params;
+  try {  
+        // Validation for he type of the blog id 
         if(!mongoose.Types.ObjectId.isValid(id)){
           return res.status(404).json({
             error: "News not found"
