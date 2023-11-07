@@ -19,7 +19,7 @@ const newsSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    required: true,
+    required: false,
     validate: {
       validator: (date) => !isNaN(date), // Check if it's a valid date
       message: "Date must be a valid date.",

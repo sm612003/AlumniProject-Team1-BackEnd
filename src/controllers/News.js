@@ -18,12 +18,12 @@ export const addNews = async (req, res) => {
       subtitle,
       subtitleDescription,
       links,
-      category,
+      Category,
       newsletterID,
     } = req.body; 
     const image = req.file.path;
     // Validation , ensure all required fields are here
-    if (!title || !author || !description || !date || !category || !newsletterID) {
+    if (!title || !author || !description  || !Category || !newsletterID) {
       return res.status(400).json({ error: "Please provide all required data" });
     }
     // Fetch newsletter based on the provided ID
@@ -44,7 +44,7 @@ export const addNews = async (req, res) => {
         subtitleDescription,
         links,
         image,
-        Category: category,
+        Category: Category,
       });
       // Save the news post and push it to the newsletter array
       const addedNews = await post.save();
@@ -66,7 +66,7 @@ export const addNews = async (req, res) => {
 export const getAllNews = async (req, res) => {
   try {
     // Fetch and sort all news posts by date
-    const newsCard = await News.find().sort({ date: -1 });
+    const newsCard = await News.find().sort({ date: 1 });
     if(!newsCard){
       return res.json({
         error : "No News found"
