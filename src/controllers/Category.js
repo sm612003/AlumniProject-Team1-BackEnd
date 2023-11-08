@@ -5,7 +5,7 @@ import Category from "../models/Category.js";
 export const getAllCategories = async (req, res) => {
   try {
     //this code aims to find all categories
-    const categories = await Category.find().sort({name : 1});
+    const categories = await Category.find()
     //if the categories are found it will return the list of categories with a 200 status
     res.status(200).json(categories);
   } catch (error) {
@@ -64,7 +64,7 @@ export const addCategory = async (req, res) => {
   try {
     console.log(name)
     // Check if 'name' is provided, is a string, and is not empty
-    if (!name || typeof(name) != 'string') {
+    if (!name) {
       return res.status(400).json({ error: 'Name is required and must be a non-empty string' });
     }
     // Create a new category using the provided 'name'
