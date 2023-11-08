@@ -5,6 +5,7 @@ import blogRouter from "./src/routes/Blogs.js";
 import newsRouter from "./src/routes/News.js";
 import newsletterRouter from "./src/routes/Newsletter.js";
 import categoryRouter from "./src/routes/Category.js";
+import emailRouter from './src/routes/Email.js'
 import connect from "./src/config/config.js";
 import dotenv from 'dotenv'
 
@@ -33,3 +34,4 @@ app.use("/", blogRouter)
 app.use("/", newsRouter)
 app.use("/", newsletterRouter)
 app.use("/", categoryRouter)
+app.use("/" , emailRouter)
