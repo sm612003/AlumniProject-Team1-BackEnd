@@ -66,7 +66,7 @@ export const addNews = async (req, res) => {
 export const getAllNews = async (req, res) => {
   try {
     // Fetch and sort all news posts by date
-    const newsCard = await News.find().sort({ date: 1 });
+    const newsCard = await News.find().sort({ date: -1 });
     if(!newsCard){
       return res.json({
         error : "No News found"
