@@ -94,14 +94,14 @@ export const getNewsById = async (req, res) => {
     const newsCard = await News.findById(id);
     if (newsCard) {
       // Respond with the news post
-      res.status(200).json(newsCard);
+      res.status(200).json(newsCard); 
     } else {
       res.status(404).json({ message: "Blog not found" });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
-};
+}; 
 
 
 // delete a news based on id
