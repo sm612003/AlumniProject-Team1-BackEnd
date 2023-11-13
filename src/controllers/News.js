@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Category from "../models/Category.js";
 import News from "../models/News.js";
 import Newsletter from "../models/Newsletter.js";
-import fs from 'fs'
+import fs, { link } from 'fs'
 import { log } from "console";
 
 
@@ -21,7 +21,7 @@ export const addNews = async (req, res) => {
       Category,
       newsletterID,
     } = req.body; 
-    const image = req.file.path;
+    const image = req.file?.path;
     // Validation , ensure all required fields are here
     if (!title || !author || !description  || !Category || !newsletterID) {
       return res.status(400).json({ error: "Please provide all required data" });
@@ -36,14 +36,14 @@ export const addNews = async (req, res) => {
     }
       // Create a new news post
       const post = new News({
-        title,
-        author,
-        description,
-        date,
-        subtitle,
-        subtitleDescription,
-        links,
-        image,
+        title: title,
+        author: author,
+        description: description,
+        date: date,
+        subtitle: subtitle,
+        subtitleDescription: subtitleDescription,
+        links: links,
+        image: image,
         Category: Category,
       });
       // Save the news post and push it to the newsletter array
@@ -114,23 +114,8 @@ export const deleteNews = async (req, res) => {
         error: "News not found"
       })
     }
-    // Fetch the news post by ID
-    const news = await News.findById(id)
-    if(!news){
-      return res.status(404).json({
-        error: "News not found"
-      })
-    }
-    // Delete the associated image file from the local folder 
-    fs.unlink(news.image , (err) => {
-      if (err){
-        return res.status(500).json({
-          error :`error deleting image: ${err}`
-        })
-      }
-    })
     // Delete the entire news post from database
-    const deletedNews = await News.findByIdAndRemove(id);
+    const deletedNews = await News.findOneAndDelete({_id : id});
       if (!deletedNews) {
       return res.status(404).json({
         error: "Newscard is not found",
@@ -156,24 +141,33 @@ export const updateNews = async (req, res) => {
   }
   // Fetch the current news post
   const newsfirst = await News.findById(id)
-  // Delete the image from the local folder
-  fs.unlink(newsfirst.image , (err)=> {
-    if(err){
-      return res.status(500).json({
-        error: `error updating the photo`
-      })
-    }
-  })
   // Handle file upload and potential errors   
     try {
       // Extract updated data from the request
-      const updatedData = req.body 
-      const image = req.file.path ;
-      updatedData.image = image ;
+      const {
+        author = newsfirst.author,
+        title = newsfirst.title ,
+        date = newsfirst.date ,
+        description = newsfirst.description ,
+        subtitle = newsfirst.subtitle , 
+        subtitleDescription = newsfirst.subtitleDescription,
+        links = newsfirst.links ,
+        Category = newsfirst.Category , 
+      } = req.body
+      const image = req.file?.path ;
       // Update the news post and respond with the updated data
       const news = await News.findByIdAndUpdate(
         {_id: id},
-        updatedData,
+        {author: author ,
+        title: title ,
+        date : date ,
+        description : description,
+        subtitle: subtitle , 
+        subtitleDescription: subtitleDescription,
+        links: links,
+        Category: Category ,
+        image : image
+      },
         {new: true}
       )
       return res.json({

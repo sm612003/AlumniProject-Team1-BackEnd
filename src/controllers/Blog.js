@@ -128,23 +128,21 @@ export const updateBlog = async (req, res) => {
       error: "Blogs not found"
     })
   }
-
   const blogfirst = await Blog.findById(id)
-  fs.unlink(blogfirst.image , (err)=> {
-    if(err){
-      return res.status(500).json({
-        error: `error updating the photo`
-      })
-    }
-  })
-    try {
-      const updatedData = req.body;
-      const image = req.file.path ;
-      updatedData.image = image
+  try {
+    const {
+      author = blogfirst.author, 
+      title = blogfirst.title, 
+      content = blogfirst.content , 
+    } = req.body
+    const image = req.file?.path ;
       // Find the existing blog post by ID
       const updatedBlog = await Blog.findByIdAndUpdate(
         { _id: id },
-        updatedData,
+        {author: author ,
+        title: title ,
+        content: content , 
+        image: image} ,
         { new: true }
       );
 
