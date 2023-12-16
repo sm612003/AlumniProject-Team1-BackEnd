@@ -1,0 +1,248 @@
+import { comparePassword, generateToken } from "../utils/jwt.js";
+import User from "../models/User.js";
+// export const createUser = async (req, res) => {
+//   const { firstName, lastName, dob, email, password, role } = req.body;
+//   const image = req.file?.path;
+
+//   const hashedPassword = await hashPassword(password);
+
+//   if (!firstName || !lastName || !dob || !email || !password || !role) {
+//     return res.status(400).send("All fields are required!");
+//   }
+
+//   if (!req.file) {
+//     return res.status(400).json({ error: "Please upload an image" });
+//   }
+
+//   try {
+//     const newUser = await User.create({
+//       firstName,
+//       lastName,
+//       dob,
+//       email,
+//       password: hashedPassword,
+//       image,
+//       role,
+//     });
+
+//     if (newUser) {
+//       return res.status(200).json({
+//         message: `New User ${firstName} ${lastName} has been created successfully!`,
+//         User: newUser,
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).send("Internal Server Error");
+//   }
+// };
+import { hashPassword } from "../utils/jwt.js";
+
+export const createUser = async (req, res) => {
+  const { firstName, lastName, dob, email, password, role } = req.body;
+  const image = req.file?.path;
+
+  if (!firstName || !lastName || !dob || !email || !password || !role) {
+    return res.status(400).send("All fields are required!");
+  }
+
+  if (!req.file) {
+    return res.status(400).json({ error: "Please upload an image" });
+  }
+
+  try {
+    const hashedPassword = await hashPassword(password);
+
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      dob,
+      email,
+      password: hashedPassword,
+      image,
+      role,
+     
+      
+    });
+
+    if (newUser) {
+      return res.status(200).json({
+        message: `New User ${firstName} ${lastName} has been created successfully!`,
+        User: newUser,
+       
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+export const showAllUsers = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    const users = await User.find().skip(offset).limit(parseInt(pageSize));
+    return res.status(200).json({ Users: users });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const showOneUser = async (req, res) => {
+  const id = req.params._id;
+
+  try {
+    const user = await User.findById(id);
+
+    if (user) {
+      return res.status(200).json({ User: user });
+    } else {
+      return res.status(404).send(`User ${id} does not exist!`);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+/// is not working when i add image , err in multer 
+export const updateUser = async (req, res) => {
+  const id = req.body.id;
+  const { firstName, lastName,
+    //  dob, email, password, role
+     } = req.body;
+  const newImage = req.file?.path;
+
+  if (!firstName || !lastName
+    //  !dob || !email || !password || !role
+     ) {
+    return res.status(400).send("All fields are required!");
+  }
+
+  try {
+    const user = await User.findById(id);
+    const oldImage = user.image;
+
+    if (!user) {
+      return res.status(404).send(`User ${id} does not exist!`);
+    }
+
+    const editUser = await User.findByIdAndUpdate(
+      { _id: id },
+      {
+        firstName,
+        lastName,
+        // dob,
+        // email,
+        // password,
+        // image: newImage,
+        // role,
+      },
+      { new: true }
+    );
+
+    if (req.file) {
+      // Delete old image
+      // You need to implement the logic to delete the old image from your storage
+    }
+
+    return res.status(200).json({
+      message: `User ${editUser.firstName} has been updated successfully!`,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  const id = req.body.id;
+
+  try {
+    const user = await User.findOneAndDelete({ _id: id });
+
+    if (!user) {
+      return res.status(404).send(`User ${id} does not exist!`);
+    }
+
+    // await user.remove();
+    return res
+      .status(200)
+      .json({ message: `User ${id} has been deleted successfully!` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(401).json({ err: "Invalid email or password" });
+    }
+
+    const isPasswordValid = await comparePassword(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ err: "Invalid password" });
+    }
+
+    const token = generateToken(user);
+
+    return res
+      .cookie("token", token, { httpOnly: true, sameSite: "Strict" })
+      .json({ message: "Login successful" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const authenticateUser = (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ err: "Unauthorized" });
+    }
+
+    const decodedToken = verifyToken(token);
+
+    if (!decodedToken) {
+      return res.status(401).json({ err: "Invalid token" });
+    }
+
+    req.user = decodedToken;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const authorizeUser = (roles) => {
+  return (req, res, next) => {
+    const userRole = req.user.role;
+
+    if (!roles.includes(userRole)) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    next();
+  };
+};
+
+export const loggedInUser = (req, res) => {
+  res.json({ user: req.user });
+};
+
+export const logout = async (req, res) => {
+  // Add your logic for logging out here
+  // For example, clearing the token from cookies
+  res.clearCookie("token").json({ message: "Logout successful" });
+};
