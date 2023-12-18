@@ -26,17 +26,19 @@ const register = async (req, res) => {
     }
 
     email = email.toLowerCase()
+    const hashedPass = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       userName,
       email,
-      password,
+      password:hashedPass,
       role
     });
 
    
 
     return res.status(201).json({
-      message: 'User successfully created please log in to your account!'
+      message: 'User successfully created please log in to your account!',
+      data:newUser
     });
   } catch (error) {
   res.status(500).json({
@@ -50,10 +52,11 @@ const login = async (req, res) => {
   try {
     console.log(req.body)
     const { email, password } = req.body;
-
+ 
     // Find the user by email
     const user = await User.findOne({email});
-
+   console.log('Entered Password:', password);
+    console.log('Stored Password:', user.password);
     if (!user) {
       return res.status(401).json({ message: "Email not found" });
     }
