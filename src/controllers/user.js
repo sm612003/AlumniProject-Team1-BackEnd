@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs"
 import User from '../models/user.js'
-import fs from "fs";
-import { generateToken } from "../utils/jwt.js";
+import { generateToken } from "../../utils/jwt.js";
 
 
 const register = async (req, res) => {
@@ -82,3 +81,6 @@ const login = async (req, res) => {
     return res.status(401).json({ message: err.message});
   }
 };
+
+
+export {register,login}

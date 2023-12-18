@@ -8,7 +8,7 @@ import categoryRouter from "./src/routes/Category.js";
 import emailRouter from './src/routes/Email.js'
 import connect from "./src/config/config.js";
 import dotenv from 'dotenv'
-
+import userRouter from './src/routes/user.js'
 dotenv.config()
 const app = express();
 const PORT = process.env.PORT
@@ -35,3 +35,4 @@ app.use("/", newsRouter)
 app.use("/", newsletterRouter)
 app.use("/", categoryRouter)
 app.use("/" , emailRouter)
+app.use("/user",userRouter)
