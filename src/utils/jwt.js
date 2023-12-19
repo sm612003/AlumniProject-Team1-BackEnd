@@ -9,16 +9,16 @@ export const generateToken = (user) => {
         role: user.role,
     }
     return jwt.sign(payload , "secretKey" , {expiresIn: '4h'})
-} // utils
-
+}
+ // utils
 export const verifyToken = (token) => {
     try {
         return jwt.verify(token , "secretKey")
     } catch (error){
         return null
     }
-} // utils
-
+}
+ // utils
 export const comparePassword = async (password , hashedPassword) => {
     return bcrypt.compare(password , hashedPassword)
   }
@@ -28,7 +28,12 @@ export const hashPassword = async (password) => {
   const saltRounds = 10;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const
+    
+    
+    
+    
+    hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
   } catch (error) {
     console.error('Error hashing password:', error);
