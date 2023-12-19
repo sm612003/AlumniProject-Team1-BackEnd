@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Blog {
+  id        Int      @id @default(autoincrement())
+  author    String   @db.VarChar(255)
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  image     String?  @db.VarChar(255)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  news      News[]
+}
+
+model News {
+  id                  Int        @id @default(autoincrement())
+  title               String     @db.VarChar(255)
+  author              String     @db.VarChar(255)
+  date                DateTime?  @db.DateTime
+  image               String?    @db.VarChar(255)
+  description         String     @db.Text
+  subtitle            String     @db.VarChar(255)
+  subtitleDescription String     @db.Text
+  link                String     @db.VarChar(255)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @default(now())
+  categoryId          Int
+  category            Category   @relation(fields: [categoryId], references: [id])
+  newsletterId        Int
+  newsletter          Newsletter @relation(fields: [newsletterId], references: [id])
+}
+
+model Newsletter {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(255)
+  news           News[]
+  subscribedUser SubscribedUser[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  userName    String   @unique @db.VarChar(255)
+  email       String   @unique @db.VarChar(255)
+  password    String   @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  Link        String?
+  image       String?  @db.VarChar(255)
+  role        Role     @default(user)
+  blogs       Blog[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+enum Role {
+  user
+  admin
+}
+
+model SubscribedUser {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  NewsLetterId Int
+  NewsLetter   Newsletter @relation(fields: [NewsLetterId], references: [id])
+}
