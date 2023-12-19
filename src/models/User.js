@@ -40,26 +40,11 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["Admin", "Manager", "Accountant"],
+    enum: ["Admin", "User"],
     required: true,
   },
 });
 
-// Hash the password before saving to the database
-// userSchema.pre("save", async function (next) {
-//   if (this.isModified("password") || this.isNew) {
-//     try {
-//       const salt = await bcrypt.genSalt(10);
-//       const hashedPassword = await bcrypt.hash(this.password, salt);
-//       this.password = hashedPassword;
-//       next();
-//     } catch (error) {
-//       return next(error);
-//     }
-//   } else {
-//     return next();
-//   }
-// });
 
 const User = mongoose.model("User", userSchema);
 
