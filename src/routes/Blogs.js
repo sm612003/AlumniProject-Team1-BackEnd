@@ -9,11 +9,11 @@ const blogRouter= express.Router()
 blogRouter.get('/read/blogs',getAllBlogs);
 blogRouter.get('/read/blogsById/:id', getBlogById);
 blogRouter.post('/add/blogs',authenticateUser,
-authorizeUser(["Admin,user"]),upload.single("image") , addBlog ) ;
+authorizeUser(["admin,user"]),upload.single("image") , addBlog ) ;
 blogRouter.patch('/update/blogs',authenticateUser,
-authorizeUser(["Admin,user"]),upload.single("image") , updateBlog);
+authorizeUser(["admin,user"]),upload.single("image") , updateBlog);
 blogRouter.delete('/delete/blogs/:id',authenticateUser,
-authorizeUser(["Admin,user"]), deleteBlog);
+authorizeUser(["admin,user"]), deleteBlog);
 // blogRouter.get('/read/blogs/byCategory', getBlogsByCategory);
 
 
