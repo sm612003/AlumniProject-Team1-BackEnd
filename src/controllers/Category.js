@@ -1,11 +1,11 @@
-//const Category = require('./CategoryModel');
-import mongoose from "mongoose";
-import Category from "../models/Category.js";
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 //here we are exporting an asynchronous function  named getAllCategories
 export const getAllCategories = async (req, res) => {
   try {
     //this code aims to find all categories
-    const categories = await Category.find()
+    const categories = await prisma.Category.find()
     //if the categories are found it will return the list of categories with a 200 status
     res.status(200).json(categories);
   } catch (error) {
@@ -19,14 +19,14 @@ export const getCategoryById = async (req, res) => {
   //extracting the id from the request body 
   const id = req.body.id;
   try {
-    console.log(id)
-    //checking if the provided categoryId is a valid mongodb objectID
-    if(!mongoose.Types.ObjectId.isValid(id)){
-      //If not valid, respond with a 400 status and an error message
-      return res.status(400).json({ message: 'Invalid category ID' });
-    }
+    // console.log(id)
+    // //checking if the provided categoryId is a valid mongodb objectID
+    // if(!mongoose.Types.ObjectId.isValid(id)){
+    //   //If not valid, respond with a 400 status and an error message
+    //   return res.status(400).json({ message: 'Invalid category ID' });
+    // }
     //this code aims to find a category by the provided ID
-    const category = await Category.findById(id);
+    const category = await prisma.Category.findUnique({where:{id:id}});
     //if category is found respond with a 200 status with the provided ID
     res.status(200).json(category);
   } catch (error) {
@@ -41,7 +41,7 @@ export const getCategoryByName = async ( req , res) => {
   const categoryName = req.body.categoryName
   try{
     //this code aims to find a category by its name
-    const category = await Category.findOne({name: categoryName});
+    const category = await prisma.Category.findUnique({where:{name:categoryName}});
     // If category is not found, respond with a 404 status and an error message
     if(!category){
       return res.status(404).json({message: "Category not found"});
@@ -68,11 +68,14 @@ export const addCategory = async (req, res) => {
       return res.status(400).json({ error: 'Name is required and must be a non-empty string' });
     }
     // Create a new category using the provided 'name'
-    const newCategory = new Category({ name });
-    // Save the new category to the database
-    await newCategory.save();
+    const addedCategory = await prisma.Category.create({
+      data: {
+        name:name
+        },
+    })
+
     // Respond with a 200 status and the newly created category
-    res.status(200).json(newCategory);
+    res.status(200).json(addedCategory);
   } catch (error) {
     // If an error occurs, respond with a 500 status and an error message
     res.status(500).json({ error: "error adding category" });
@@ -87,7 +90,7 @@ export const deleteCategoryById = async (req, res) => {
   const id = req.body.id;
   try {
     // Attempt to find and delete a category by its ID
-    const deleteCategory = await Category.findByIdAndDelete(id);
+    const deleteCategory = await prisma.Category.delete({where:{id:id}});
     // If category is not found, respond with a 404 status and an error message
     if (!deleteCategory) {
       return res.status(404).json({ message: "Category not found" });
