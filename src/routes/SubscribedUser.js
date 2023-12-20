@@ -6,7 +6,7 @@ const subscribedrouter = express.Router();
 
 
 // Define routes
-subscribedrouter.post('/add/subscribedUsers', createSubscribedUser);
+subscribedrouter.post('/add/subscribedUsers' ,createSubscribedUser);
 subscribedrouter.get('/getall/subscribedUsers', getAllSubscribedUsers);
 subscribedrouter.get('/subscribedUsers/:id', getSubscribedUserById);
 subscribedrouter.delete('/delete/subscribedUsers/:id', deleteSubscribedUser);
