@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,9 +14,11 @@ model Blog {
   content   String   @db.Text
   image     String?  @db.VarChar(255)
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Blog_userId_fkey")
 }
 
 model Category {
@@ -34,7 +33,7 @@ model News {
   id                  Int        @id @default(autoincrement())
   title               String     @db.VarChar(255)
   author              String     @db.VarChar(255)
-  date                DateTime?  @db.DateTime
+  date                DateTime?  @db.DateTime(0)
   image               String?    @db.VarChar(255)
   description         String     @db.Text
   subtitle            String     @db.VarChar(255)
@@ -43,37 +42,37 @@ model News {
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @default(now())
   categoryId          Int
-  category            Category   @relation(fields: [categoryId], references: [id])
   newsletterId        Int
+  category            Category   @relation(fields: [categoryId], references: [id])
   newsletter          Newsletter @relation(fields: [newsletterId], references: [id])
+
+  @@index([categoryId], map: "News_categoryId_fkey")
+  @@index([newsletterId], map: "News_newsletterId_fkey")
 }
 
 model Newsletter {
   id             Int              @id @default(autoincrement())
   name           String           @db.VarChar(255)
-  news           News[]
-  subscribedUser SubscribedUser[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now())
+  news           News[]
+  subscribedUser SubscribedUser[]
 }
 
 model User {
   id          Int      @id @default(autoincrement())
-  userName    String   @unique @db.VarChar(255)
+  firstName    String   @unique @db.VarChar(255)
+  lastName    String   @unique @db.VarChar(255)
   email       String   @unique @db.VarChar(255)
   password    String   @db.VarChar(255)
-  description String?   @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  dob         DateTime @default(now())
   Link        String?
   image       String?  @db.VarChar(255)
   role        Role     @default(user)
-  blogs       Blog[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
-}
-
-enum Role {
-  user
-  admin
+  blogs       Blog[]
 }
 
 model SubscribedUser {
@@ -81,4 +80,11 @@ model SubscribedUser {
   email        String     @unique
   NewsLetterId Int
   NewsLetter   Newsletter @relation(fields: [NewsLetterId], references: [id])
+
+  @@index([NewsLetterId], map: "SubscribedUser_NewsLetterId_fkey")
+}
+
+enum Role {
+  user
+  admin
 }

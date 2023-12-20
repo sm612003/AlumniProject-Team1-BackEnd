@@ -6,7 +6,7 @@ import newsRouter from "./src/routes/News.js";
 import newsletterRouter from "./src/routes/Newsletter.js";
 import categoryRouter from "./src/routes/Category.js";
 import emailRouter from './src/routes/Email.js'
-import connect from "./src/config/config.js";
+// import connect from "./src/config/config.js";
 import dotenv from 'dotenv'
 import userRoutes from "./src/routes/userRoutes.js";
 import cookieParser from "cookie-parser";
@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use('/images', express.static(process.cwd() + "/images"))
 
 app.listen(PORT , () => {
-    connect()
+    // connect()
     console.log(`running on port ${PORT}`)
 })
 app.use(cors());
