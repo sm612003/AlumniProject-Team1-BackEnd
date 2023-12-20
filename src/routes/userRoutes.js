@@ -19,8 +19,8 @@ userRoutes.post("/create", upload.single("image"), createUser);
 // Show all users
 userRoutes.get(
   "/view-all",
-  authenticateUser,
-  authorizeUser(["admin"]),
+
+
   showAllUsers
 );
 
@@ -28,10 +28,21 @@ userRoutes.get(
 userRoutes.get("/view-one/:id", showOneUser);
 
 // Update a user
-userRoutes.patch("/update", upload.single("image"), updateUser);
+userRoutes.patch(
+  "/update",
+  authenticateUser,
+
+  upload.single("image"),
+  updateUser
+);
 
 // Delete a user
-userRoutes.delete("/delete", deleteUser);
+userRoutes.delete(
+  "/delete",
+  authenticateUser,
+  authorizeUser(["admin"]),
+  deleteUser
+);
 
 // Login user
 userRoutes.post("/login",

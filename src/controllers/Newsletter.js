@@ -30,7 +30,6 @@
 //   }
 // };
 
-
 // // Add a new newsletter
 // export const addNewsletter = async (req, res) => {
 //   const name = req.body.name;
@@ -46,7 +45,6 @@
 //     console.log(error);
 //   }
 // };
-
 
 // // Delete a newsletter by ID
 // export const deleteNewsletterById = async (req, res) => {
@@ -70,7 +68,6 @@
 //     res.status(404).json({ message: error.message });
 //   }
 // };
-
 
 // // Update newsletter emails by pushing a new email to the array
 // export const updateNewsletterEmails = async (req, res) => {
@@ -183,7 +180,7 @@ export const deleteNewsletterById = async (req, res) => {
   }
 };
 
-// Update newsletter emails by pushing a new email to the array
+// // Update newsletter emails by pushing a new email to the array
 // export const updateNewsletterEmails = async (req, res) => {
 //   const { id, email } = req.body;
 //   try {
@@ -221,3 +218,36 @@ export const deleteNewsletterById = async (req, res) => {
 //     console.error(error);
 //   }
 // };
+
+export const updateNewsLetter = async (req, res) => {
+  const id = parseInt(req.body.id);
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).send("All fields are required!");
+  }
+
+  try {
+    const newsLetter = await prisma.newsletter.findUnique({
+      where: { id },
+    });
+
+    if (!newsLetter) {
+      return res.status(404).send(`NewsLetter ${id} does not exist!`);
+    }
+
+    const editNewsletter = await prisma.newsletter.update({
+      where: { id },
+      data: {
+        name,
+      },
+    });
+
+    return res.status(200).json({
+      message: `newsLetter ${editNewsletter.name} has been updated successfully!`,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
