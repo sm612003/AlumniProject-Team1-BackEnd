@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
-import Category from "../models/Category.js";
-import News from "../models/News.js";
-import Newsletter from "../models/Newsletter.js";
 import fs, { link } from 'fs'
 import { log } from "console";
+
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 
 // add news
@@ -27,36 +26,44 @@ export const addNews = async (req, res) => {
       return res.status(400).json({ error: "Please provide all required data" });
     }
     // Fetch newsletter based on the provided ID
-    const newsletter = await Newsletter.findById(newsletterId)
+    const newsletter = await prisma.Newsletter.findUnique({
+      where: {
+       id: newsletterId,
+      },
+    })
     if (!newsletter) {
       return res.status(404).json({ error: "Newsletter not found" });
     }
      // Fetch category based on the provided ID
-     const category = await category.findById(categoryId)
+     const category = await prisma.Category.findUnique({
+      where: {
+       id: categoryId,
+      },
+    })
      if (!category) {
        return res.status(404).json({ error: "category not found" });
      }
     if (!req.file) {
       return res.status(400).json({ error: "Please upload an image" });
     }
-    // Create a new news post
-    const post = new News({
-      title: title,
-      author: author,
-      description: description,
-      date: date,
-      subtitle: subtitle,
-      subtitleDescription: subtitleDescription,
-      link: link,
-      image: image,
-      categoryId: categoryId,
-      newsletterId:newsletterId
-    });
-    // Save the news post and push it to the newsletter array
-    const addedNews = await post.save();
-    newsletter.news.push(post);
-    await newsletter.save()
-    // Respond with the newly created post
+   
+   
+//create news
+    const addedNews = await prisma.News.create({
+      data: {
+          title: title,
+          author: author,
+          description: description,
+          date: date,
+          subtitle: subtitle,
+          subtitleDescription: subtitleDescription,
+          link: link,
+          image: image,
+          categoryId: categoryId,
+          newsletterId:newsletterId
+        },
+    })
+    
     return res.status(200).json({
       message: `News ${addedNews.title} is added successfuly`,
       data: addedNews
@@ -72,7 +79,13 @@ export const addNews = async (req, res) => {
 export const getAllNews = async (req, res) => {
   try {
     // Fetch and sort all news posts by date
-    const newsCard = await News.find().sort({ date: -1 });
+    const newsCard = await prisma.News.findMany({
+      orderBy: [
+        {
+          date: 'asc',
+        },
+      ]
+    })
     if (!newsCard) {
       return res.json({
         error: "No News found"
@@ -88,21 +101,20 @@ export const getAllNews = async (req, res) => {
 
 // see a new based on id
 export const getNewsById = async (req, res) => {
-  const id = req.params.id;
+  const id = req.body.id;
   try {
-    // Validation for he type of the news ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({
-        error: "News not found"
-      })
-    }
+  
     // Fetch the news post by ID
-    const newsCard = await News.findById(id);
+    const newsCard = await prisma.News.findUnique({
+      where: {
+       id: id,
+      },
+    })
     if (newsCard) {
       // Respond with the news post
       res.status(200).json(newsCard);
     } else {
-      res.status(404).json({ message: "Blog not found" });
+      res.status(404).json({ message: "Post not found" });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -114,14 +126,13 @@ export const getNewsById = async (req, res) => {
 export const deleteNews = async (req, res) => {
   const id = req.body.id;
   try {
-    // Validation for he type of the news ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({
-        error: "News not found"
-      })
-    }
+  
     // Delete the entire news post from database
-    const deletedNews = await News.findOneAndDelete({ _id: id });
+    const deletedNews = await prisma.News.delete({
+      where: {
+        id: id,
+      },
+    })
     if (!deletedNews) {
       return res.status(404).json({
         error: "Newscard is not found",
@@ -139,15 +150,19 @@ export const deleteNews = async (req, res) => {
 // update news 
 export const updateNews = async (req, res) => {
   const id = req.body.id;
-  // Validation for he type of the news ID
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({
-      error: "News not found"
-    })
-  }
   // Fetch the current news post
-  const newsfirst = await News.findById(id)
-  // Handle file upload and potential errors   
+  const newsfirst = await prisma.News.findUnique({
+    where: {
+     id: id,
+    },
+  })
+
+  if (!newsfirst) {
+    return res.status(404).json({
+      error: "News is not found",
+    });
+  }
+  // // Handle file upload and potential errors   
   try {
     // Extract updated data from the request
     const {
@@ -158,28 +173,33 @@ export const updateNews = async (req, res) => {
       subtitle = newsfirst.subtitle,
       subtitleDescription = newsfirst.subtitleDescription,
       links = newsfirst.links,
-      Category = newsfirst.Category,
+      categoryId = newsfirst.categoryId,
+      newsletterId=newsfirst.newsletterId
     } = req.body
     const image = req.file?.path;
     // Update the news post and respond with the updated data
-    const news = await News.findByIdAndUpdate(
-      { _id: id },
-      {
+
+    const updatedNews = await prisma.News.update({
+      data: {
         author: author,
         title: title,
         date: date,
         description: description,
         subtitle: subtitle,
         subtitleDescription: subtitleDescription,
-        links: links,
-        Category: Category,
+        link: link,
+        categoryId: categoryId,
+        newsletterId:newsletterId,
         image: image
       },
-      { new: true }
-    )
+      where: {
+        id: id,
+      },
+    })
+  
     return res.json({
-      message: `News ${newsfirst.title} is updated successfuly`,
-      data: news
+      message: `News ${updatedNews.title} is updated successfuly`,
+      data: updatedNews
     })
   } catch (error) {
     return res.status(500).json({
@@ -195,7 +215,11 @@ export const getNewsByCategory = async (req, res) => {
   log(categoryName)
   try {
     // Find the category by name
-    const category = await Category.findOne({ name: categoryName })
+    const category = await prisma.Category.findUnique({
+      where: {
+       name:categoryName
+      },
+    })
     console.log(category)
     if (!category) {
       return res.status(404).json({
@@ -203,7 +227,7 @@ export const getNewsByCategory = async (req, res) => {
       })
     }
     // Find news posts that belong to the category and respond with them
-    const news = await News.find({ Category: category._id })
+    const news = await prisma.News.find({where:{ categoryId: category.id }})
     return res.status(200).json(news)
   } catch (error) {
     return res.status(500).json({
