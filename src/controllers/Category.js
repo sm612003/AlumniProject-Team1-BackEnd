@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export const getAllCategories = async (req, res) => {
   try {
     //this code aims to find all categories
-    const categories = await prisma.Category.find()
+    const categories = await prisma.Category.findMany()
     //if the categories are found it will return the list of categories with a 200 status
     res.status(200).json(categories);
   } catch (error) {
@@ -19,14 +19,9 @@ export const getCategoryById = async (req, res) => {
   //extracting the id from the request body 
   const id = req.body.id;
   try {
-    // console.log(id)
-    // //checking if the provided categoryId is a valid mongodb objectID
-    // if(!mongoose.Types.ObjectId.isValid(id)){
-    //   //If not valid, respond with a 400 status and an error message
-    //   return res.status(400).json({ message: 'Invalid category ID' });
-    // }
+ 
     //this code aims to find a category by the provided ID
-    const category = await prisma.Category.findUnique({where:{id:id}});
+    const category = await prisma.Category.findUnique({where:{id:parseInt(id)}});
     //if category is found respond with a 200 status with the provided ID
     res.status(200).json(category);
   } catch (error) {
@@ -38,10 +33,10 @@ export const getCategoryById = async (req, res) => {
 // Exporting an asynchronous function named 'getCategoryByName'
 export const getCategoryByName = async ( req , res) => {
   // Extracting 'categoryName' from the request body
-  const categoryName = req.body.categoryName
+  const categoryName = req.body.name
   try{
     //this code aims to find a category by its name
-    const category = await prisma.Category.findUnique({where:{name:categoryName}});
+    const category = await prisma.Category.findFirst({where:{name:categoryName}});
     // If category is not found, respond with a 404 status and an error message
     if(!category){
       return res.status(404).json({message: "Category not found"});
@@ -90,7 +85,7 @@ export const deleteCategoryById = async (req, res) => {
   const id = req.body.id;
   try {
     // Attempt to find and delete a category by its ID
-    const deleteCategory = await prisma.Category.delete({where:{id:id}});
+    const deleteCategory = await prisma.Category.delete({where:{id:parseInt(id)}});
     // If category is not found, respond with a 404 status and an error message
     if (!deleteCategory) {
       return res.status(404).json({ message: "Category not found" });

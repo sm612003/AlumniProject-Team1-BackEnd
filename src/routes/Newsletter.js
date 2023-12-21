@@ -14,7 +14,7 @@ import {
 const newsletterRouter = express.Router()
 
 newsletterRouter.get('/read/newsletter', getAllNewsletters);
-newsletterRouter.post('/read/newsletterById', getNewsletterById);
+newsletterRouter.get('/read/newsletterById', getNewsletterById);
 newsletterRouter.post(
   "/add/newsletter",
   authenticateUser,

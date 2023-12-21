@@ -21,14 +21,15 @@ export const addNews = async (req, res) => {
       newsletterId
     } = req.body;
     const image = req.file?.path;
-    // Validation , ensure all required fields are here
+    console.log(image)
+        // Validation , ensure all required fields are here
     if (!title || !author || !description || !categoryId || !newsletterId) {
       return res.status(400).json({ error: "Please provide all required data" });
     }
     // Fetch newsletter based on the provided ID
     const newsletter = await prisma.Newsletter.findUnique({
       where: {
-       id: newsletterId,
+       id: parseInt(newsletterId),
       },
     })
     if (!newsletter) {
@@ -37,7 +38,7 @@ export const addNews = async (req, res) => {
      // Fetch category based on the provided ID
      const category = await prisma.Category.findUnique({
       where: {
-       id: categoryId,
+       id: parseInt(categoryId),
       },
     })
      if (!category) {
@@ -54,13 +55,13 @@ export const addNews = async (req, res) => {
           title: title,
           author: author,
           description: description,
-          date: date,
+          date: new Date(date),
           subtitle: subtitle,
           subtitleDescription: subtitleDescription,
           link: link,
-          image: image,
-          categoryId: categoryId,
-          newsletterId:newsletterId
+          categoryId: parseInt(categoryId),
+           image: image,
+          newsletterId:parseInt(newsletterId)
         },
     })
     
@@ -107,7 +108,7 @@ export const getNewsById = async (req, res) => {
     // Fetch the news post by ID
     const newsCard = await prisma.News.findUnique({
       where: {
-       id: id,
+       id: parseInt(id),
       },
     })
     if (newsCard) {
@@ -125,22 +126,21 @@ export const getNewsById = async (req, res) => {
 // delete a news based on id
 export const deleteNews = async (req, res) => {
   const id = req.body.id;
-  try {
-  
+  try {console.log(id)
     // Delete the entire news post from database
     const deletedNews = await prisma.News.delete({
       where: {
-        id: id,
+        id: parseInt(id),
       },
     })
+    
     if (!deletedNews) {
       return res.status(404).json({
         error: "Newscard is not found",
       });
     }
-    return res
-      .status(200)
-      .json({ message: `News ${deletedNews.title} deleted successfully` });
+    console.log(deletedNews)
+    return res.status(200).json({ message: `News ${deletedNews.title} deleted successfully` });
   } catch (error) {
     return res.status(404).json({ message: "Error deleting newscard" });
   }
@@ -153,7 +153,7 @@ export const updateNews = async (req, res) => {
   // Fetch the current news post
   const newsfirst = await prisma.News.findUnique({
     where: {
-     id: id,
+     id: parseInt(id),
     },
   })
 
@@ -172,7 +172,7 @@ export const updateNews = async (req, res) => {
       description = newsfirst.description,
       subtitle = newsfirst.subtitle,
       subtitleDescription = newsfirst.subtitleDescription,
-      links = newsfirst.links,
+      link = newsfirst.link,
       categoryId = newsfirst.categoryId,
       newsletterId=newsfirst.newsletterId
     } = req.body
@@ -193,7 +193,7 @@ export const updateNews = async (req, res) => {
         image: image
       },
       where: {
-        id: id,
+        id: parseInt(id),
       },
     })
   
@@ -215,7 +215,7 @@ export const getNewsByCategory = async (req, res) => {
   log(categoryName)
   try {
     // Find the category by name
-    const category = await prisma.Category.findUnique({
+    const category = await prisma.Category.findFirst({
       where: {
        name:categoryName
       },
@@ -227,7 +227,7 @@ export const getNewsByCategory = async (req, res) => {
       })
     }
     // Find news posts that belong to the category and respond with them
-    const news = await prisma.News.find({where:{ categoryId: category.id }})
+    const news = await prisma.News.findMany({where:{ categoryId: category.id }})
     return res.status(200).json(news)
   } catch (error) {
     return res.status(500).json({
