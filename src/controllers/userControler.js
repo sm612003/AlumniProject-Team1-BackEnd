@@ -61,15 +61,14 @@
 //       password: hashedPassword,
 //       image,
 //       role,
-     
-      
+
 //     });
 
 //     if (newUser) {
 //       return res.status(200).json({
 //         message: `New User ${firstName} ${lastName} has been created successfully!`,
 //         User: newUser,
-       
+
 //       });
 //     }
 //   } catch (error) {
@@ -106,7 +105,7 @@
 //     return res.status(500).json({ error: "Internal Server Error" });
 //   }
 // };
-// /// is not working when i add image , err in multer 
+// /// is not working when i add image , err in multer
 // export const updateUser = async (req, res) => {
 //   const id = req.body.id;
 //   const { firstName, lastName,
@@ -203,8 +202,6 @@
 //   }
 // };
 
-
-
 // export const loggedInUser = (req, res) => {
 //   res.json({ user: req.user });
 // };
@@ -226,7 +223,16 @@ export const createUser = async (req, res) => {
     req.body;
   const image = req.file?.path;
 
-  if (!firstName || !lastName || !dob || !email || !password || !role || !  description || !Link) {
+  if (
+    !firstName ||
+    !lastName ||
+    !dob ||
+    !email ||
+    !password ||
+    !role ||
+    !description ||
+    !Link
+  ) {
     return res.status(400).send("All fields are required!");
   }
 
@@ -281,7 +287,7 @@ export const showAllUsers = async (req, res) => {
 };
 
 export const showOneUser = async (req, res) => {
-  const id = parseInt(req.params._id);
+  const id = parseInt(req.params.id);
 
   try {
     const user = await prisma.user.findUnique({
@@ -324,7 +330,6 @@ export const updateUser = async (req, res) => {
         lastName,
         description,
         image: newImage,
-
       },
     });
 
@@ -385,7 +390,7 @@ export const loginUser = async (req, res) => {
 
     return res
       .cookie("token", token, { httpOnly: true, sameSite: "Strict" })
-      .json({ message: "Login successful" });
+      .json(user);// pass data of user to frontend 
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });

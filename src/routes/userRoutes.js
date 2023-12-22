@@ -6,10 +6,15 @@ import {
   updateUser,
   deleteUser,
   loginUser,
+  logout,
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
-import { authenticateUser, authorizeUser , loggedInUser } from "../middlewares/auth.js";
-import User from '../models/User.js';  // Adjust this import
+import {
+  authenticateUser,
+  authorizeUser,
+  loggedInUser,
+} from "../middlewares/auth.js";
+import User from "../models/User.js"; // Adjust this import
 
 const userRoutes = express.Router();
 
@@ -19,7 +24,6 @@ userRoutes.post("/create", upload.single("image"), createUser);
 // Show all users
 userRoutes.get(
   "/view-all",
-
 
   showAllUsers
 );
@@ -45,8 +49,7 @@ userRoutes.delete(
 );
 
 // Login user
-userRoutes.post("/login",
- loginUser ,
-  loggedInUser);
+userRoutes.post("/login", loginUser, loggedInUser);
+userRoutes.post("/logout", logout);
 
 export default userRoutes;
