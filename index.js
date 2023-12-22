@@ -10,7 +10,7 @@ import emailRouter from './src/routes/Email.js'
 import dotenv from 'dotenv'
 import userRoutes from "./src/routes/userRoutes.js";
 import cookieParser from "cookie-parser";
-import subscribedrouter from "./src/routes/SubscribedUser.js";
+import router from "./src/routes/OAuth.js";
 dotenv.config()
 const app = express();
 const PORT = process.env.PORT
@@ -38,4 +38,4 @@ app.use("/", newsletterRouter)
 app.use("/", categoryRouter)
 app.use("/" , emailRouter)
 app.use("/user", userRoutes);
-app.use('/',subscribedrouter)
+app.use("/google", router)
