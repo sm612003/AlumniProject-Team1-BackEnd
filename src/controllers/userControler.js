@@ -404,3 +404,22 @@ export const logout = async (req, res) => {
   // For example, clearing the token from cookies
   res.clearCookie("token").json({ message: "Logout successful" });
 };
+
+//
+export const BarChart = async (req, res) => {
+  try {
+    // Fetch the number of subscribed users
+    const subscribedUserCount = await prisma.subscribedUser.count();
+
+    // Fetch the number of regular users
+    const userCount = await prisma.user.count();
+
+    res.json({
+      subscribedUserCount,
+      userCount,
+    });
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

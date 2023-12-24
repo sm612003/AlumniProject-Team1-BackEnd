@@ -1,5 +1,5 @@
 import  express from "express";
-import { getAllNews , getNewsById , deleteNews , updateNews , addNews , getNewsByCategory} from '../controllers/News.js';
+import { getAllNews , getNewsById , deleteNews , updateNews , addNews , getNewsByCategory, getlatestNews} from '../controllers/News.js';
 import { upload } from "../middlewares/multer.js";
 import {
     authenticateUser,
@@ -13,6 +13,7 @@ newsRouter.post('/add/news',authenticateUser,authorizeUser(['admin']),  upload.s
 newsRouter.patch('/update/news', authenticateUser,authorizeUser(['admin']), upload.single("image") , updateNews);
 newsRouter.delete('/delete/news' ,authenticateUser, authorizeUser(['admin']),deleteNews)
 newsRouter.get('/read/news/byCategory/:categoryName' ,getNewsByCategory)
+newsRouter.get('/latest',getlatestNews)
 
 
 export default newsRouter

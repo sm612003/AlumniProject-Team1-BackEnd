@@ -235,3 +235,28 @@ export const getNewsByCategory = async (req, res) => {
     })
   }
 }
+   // Controller to get the latest news with category names
+export const  getlatestNews=async(req,res)=>{
+  try {
+    const latestNews = await prisma.news.findMany({
+      orderBy: {
+        date: 'desc',
+      },
+      take: 10,
+      include: {
+        category: true, // Include the category relationship
+      },
+    });
+
+    // Transform the data to include category names
+    const transformedNews = latestNews.map((news) => ({
+      ...news,
+      categoryId: news.category?.name || 'N/A', // Use category name instead of ID
+    }));
+
+    res.json(transformedNews);
+  } catch (error) {
+    console.error('Error fetching latest news:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

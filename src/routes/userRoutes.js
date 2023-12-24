@@ -7,6 +7,7 @@ import {
   deleteUser,
   loginUser,
   logout,
+  BarChart,
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import {
@@ -51,5 +52,7 @@ userRoutes.delete(
 // Login user
 userRoutes.post("/login", loginUser, loggedInUser);
 userRoutes.post("/logout", logout);
+//barchart
+userRoutes.get('/barchart',BarChart)
 
 export default userRoutes;
