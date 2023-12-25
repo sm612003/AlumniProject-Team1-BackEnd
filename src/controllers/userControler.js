@@ -423,3 +423,41 @@ export const BarChart = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+// get most active user that add blog 
+
+export const getMostActiveUsers = async (req, res) => {
+  try {
+    const mostActiveUsers = await prisma.user.findMany({
+      orderBy: {
+        blogs: {
+          _count: 'desc',
+        },
+      },
+      take: 5,
+      include: {
+        blogs: true, // Include the blogs relationship
+      },
+    });
+
+    res.json(mostActiveUsers);
+  } catch (error) {
+    console.error('Error fetching most active users:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+export const getUserDescriptions = async (req, res) => {
+  try {
+    const usersWithDescriptions = await prisma.user.findMany({
+      select: {
+        description: true,
+      },
+    });
+
+    const descriptions = usersWithDescriptions.map(user => user.description || 'No Description');
+
+    res.json(descriptions);
+  } catch (error) {
+    console.error('Error fetching user descriptions:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

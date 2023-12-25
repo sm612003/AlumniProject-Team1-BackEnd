@@ -8,6 +8,8 @@ import {
   loginUser,
   logout,
   BarChart,
+  getMostActiveUsers,
+  getUserDescriptions
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import {
@@ -54,5 +56,8 @@ userRoutes.post("/login", loginUser, loggedInUser);
 userRoutes.post("/logout", logout);
 //barchart
 userRoutes.get('/barchart',BarChart)
+//
+userRoutes.get("/active",getMostActiveUsers)
+userRoutes.get('/description',getUserDescriptions)
 
 export default userRoutes;
