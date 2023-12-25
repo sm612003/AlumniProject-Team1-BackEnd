@@ -7,6 +7,7 @@ import {
   deleteUser,
   loginUser,
   logout,
+  getMonthly
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import {
@@ -51,5 +52,5 @@ userRoutes.delete(
 // Login user
 userRoutes.post("/login", loginUser, loggedInUser);
 userRoutes.post("/logout", logout);
-
+userRoutes.get('/getMonthly',getMonthly)
 export default userRoutes;

@@ -404,3 +404,57 @@ export const logout = async (req, res) => {
   // For example, clearing the token from cookies
   res.clearCookie("token").json({ message: "Logout successful" });
 };
+
+
+
+//getUser By Month 
+export const getMonthly = async (req, res) => {
+  let usersNumber = []
+  let lastMonths=[];
+  let currentMonth=(new Date()).getMonth();
+  let  prevSixMonth=(currentMonth>6)?(currentMonth-6):(11-currentMonth)
+  let monthlyUser = {
+    Jan: [],
+    Feb: [],
+    Mar: [],
+    Apr: [],
+    May: [],
+    Jun: [],
+    Jul: [],
+    Aug: [],
+    Sep: [],
+    Oct: [],
+    Nov: [],
+    Dec: [],
+  };
+  try {
+    const users = await prisma.user.findMany();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if (!users.length) {
+      return res.json({
+        error: 'No users found',
+        data: []
+      });
+    }
+    users.map(user => {
+      const month = user.createdAt.getMonth() + 1;
+      const monthName = monthNames[month - 1];
+      monthlyUser[monthName].push(user);
+      // usersNumber.push(monthlyUser[monthName].length)
+    });
+
+
+    monthNames.map(month=>{
+      usersNumber.push(monthlyUser[month].length)
+      
+    })
+   lastMonths=usersNumber.slice(prevSixMonth+1,currentMonth+1)
+      console.log('ppppppppppppp',lastMonths)
+      console.log('kkkkkkkkkkkk',prevSixMonth,currentMonth)
+
+    res.status(200).json({ data: monthlyUser, usersNumber: lastMonths });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
