@@ -237,12 +237,12 @@ export const getBlogById = async (req, res) => {
   const { id } = req.params;
   try {
     const blog = await prisma.blog.findUnique({
-      where: { id: parseInt(id) },
+      where: { id:parseInt(id )},
     });
     if (blog) {
       return res.status(200).json(blog);
     } else {
-      return res.status(404).json({ message: 'Blog not found' });
+      return res.status(404).json(`User ${id} does not exist!`);
     }
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error' });
