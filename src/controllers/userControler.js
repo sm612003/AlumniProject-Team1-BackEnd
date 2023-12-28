@@ -372,7 +372,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
@@ -386,17 +386,17 @@ export const loginUser = async (req, res) => {
     }
 
     const token = generateToken(user);
-
     return res
       .cookie("token", token, { httpOnly: true, sameSite: "Strict" })
-      .json(user);// pass data of user to frontend 
+      .json(user); // pass data of user to frontend
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const loggedInUser = (req, res) => {
-  res.json({ user: req.user });
+  res.json("loged from user controller"+{ user: req.user });
+  console.log("loged from auth" )
 };
 
 export const logout = async (req, res) => {

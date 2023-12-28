@@ -181,6 +181,7 @@ export const addBlog = async (req, res) => {
   try {
     const { author, title, content } = req.body;
     const image = req.file.path;
+     const userId = req.user?.id;
 
     if (!author || !title || !content) {
       return res.json({
@@ -192,13 +193,15 @@ export const addBlog = async (req, res) => {
       return res.status(400).json({ error: 'Please upload an image' });
     }
 
-    const newBlog = await prisma.Blog.create({
+    const newBlog = await prisma.blog.create({
       data: {
         author,
         title,
         content,
         image,
-        userId:1,
+        user: {
+          connect: { id: userId }, // Connect to an existing user because we havev relation in betweein blog and user 
+        },
       },
     });
 
@@ -209,6 +212,7 @@ export const addBlog = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: error.message,
+      
     });
   }
 };
@@ -216,7 +220,7 @@ export const addBlog = async (req, res) => {
 // Get all blogs
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await prisma.Blog.findMany({ orderBy: { createdAt: 'desc' } });
+    const blogs = await prisma.blog.findMany({ orderBy: { createdAt: 'desc' } });
     if (!blogs.length) {
       return res.json({
         error: 'No blogs found',
@@ -232,7 +236,7 @@ export const getAllBlogs = async (req, res) => {
 export const getBlogById = async (req, res) => {
   const { id } = req.params;
   try {
-    const blog = await prisma.Blog.findUnique({
+    const blog = await prisma.blog.findUnique({
       where: { id: parseInt(id) },
     });
     if (blog) {

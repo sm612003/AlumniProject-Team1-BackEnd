@@ -7,12 +7,13 @@ import {
   deleteUser,
   loginUser,
   logout,
+  loggedInUser,
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import {
   authenticateUser,
   authorizeUser,
-  loggedInUser,
+  // loggedInUser,
 } from "../middlewares/auth.js";
 import User from "../models/User.js"; // Adjust this import
 
