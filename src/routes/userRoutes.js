@@ -8,6 +8,9 @@ import {
   loginUser,
   logout,
   loggedInUser,
+  BarChart,
+  getMostActiveUsers,
+  getUserDescriptions
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import {
@@ -21,7 +24,6 @@ const userRoutes = express.Router();
 
 // Create a user
 userRoutes.post("/create", upload.single("image"), createUser);
-
 // Show all users
 userRoutes.get(
   "/view-all",
@@ -52,5 +54,10 @@ userRoutes.delete(
 // Login user
 userRoutes.post("/login", loginUser, loggedInUser);
 userRoutes.post("/logout", logout);
+//barchart
+userRoutes.get('/barchart',BarChart)
+//
+userRoutes.get("/active",getMostActiveUsers)
+userRoutes.get('/description',getUserDescriptions)
 
 export default userRoutes;
