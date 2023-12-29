@@ -11,6 +11,7 @@ import dotenv from 'dotenv'
 import userRoutes from "./src/routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 import router from "./src/routes/OAuth.js";
+import subscribedrouter from "./src/routes/SubscribedUser.js";
 dotenv.config()
 const app = express();
 const PORT = process.env.PORT
@@ -39,3 +40,4 @@ app.use("/", categoryRouter)
 app.use("/" , emailRouter)
 app.use("/user", userRoutes);
 app.use("/google", router)
+app.use('/',subscribedrouter)

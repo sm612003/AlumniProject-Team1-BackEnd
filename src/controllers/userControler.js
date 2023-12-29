@@ -215,6 +215,8 @@
 import { hashPassword } from "../utils/jwt.js";
 import { PrismaClient } from "@prisma/client";
 import { comparePassword, generateToken } from "../utils/jwt.js";
+import bcrypt from 'bcrypt';
+
 
 const prisma = new PrismaClient();
 
@@ -307,11 +309,11 @@ export const showOneUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const id = parseInt(req.body.id);
-  const { firstName, lastName, description } = req.body;
+  const { firstName, lastName, description, password, Link } = req.body;
   const newImage = req.file?.path;
 
   if (!firstName || !lastName) {
-    return res.status(400).send("All fields are required!");
+    return res.status(400).send("First name and last name are required fields!");
   }
 
   try {
@@ -323,6 +325,14 @@ export const updateUser = async (req, res) => {
       return res.status(404).send(`User ${id} does not exist!`);
     }
 
+    let hashedPassword = user.password; // Retain the existing password by default
+
+    // Check if a new password is provided
+    if (password) {
+      // Hash the new password
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
     const editUser = await prisma.user.update({
       where: { id },
       data: {
@@ -330,6 +340,8 @@ export const updateUser = async (req, res) => {
         lastName,
         description,
         image: newImage,
+        password: hashedPassword,
+        Link,
       },
     });
 
@@ -346,6 +358,7 @@ export const updateUser = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const deleteUser = async (req, res) => {
   const id = parseInt(req.body.id);
@@ -367,6 +380,7 @@ export const deleteUser = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;

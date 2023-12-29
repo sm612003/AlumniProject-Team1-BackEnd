@@ -23,7 +23,6 @@ const userRoutes = express.Router();
 
 // Create a user
 userRoutes.post("/create", upload.single("image"), createUser);
-
 // Show all users
 userRoutes.get(
   "/view-all",
@@ -37,7 +36,7 @@ userRoutes.get("/view-one/:id", showOneUser);
 // Update a user
 userRoutes.patch(
   "/update",
-  authenticateUser,
+  // authenticateUser,
 
   upload.single("image"),
   updateUser
@@ -46,8 +45,8 @@ userRoutes.patch(
 // Delete a user
 userRoutes.delete(
   "/delete",
-  authenticateUser,
-  authorizeUser(["admin"]),
+  // authenticateUser,
+  // authorizeUser(["admin"]),
   deleteUser
 );
 
