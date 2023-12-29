@@ -11,12 +11,9 @@ import dotenv from "dotenv";
 import userRoutes from "./src/routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 import router from "./src/routes/OAuth.js";
-<<<<<<< HEAD
 dotenv.config();
-=======
 import subscribedrouter from "./src/routes/SubscribedUser.js";
 dotenv.config()
->>>>>>> souhad-dashboard
 const app = express();
 const PORT = process.env.PORT;
 
@@ -53,10 +50,6 @@ app.use("/", newsletterRouter);
 app.use("/", categoryRouter);
 app.use("/", emailRouter);
 app.use("/user", userRoutes);
-<<<<<<< HEAD
-app.use("/google", router);
 
-=======
 app.use("/google", router)
 app.use('/',subscribedrouter)
->>>>>>> souhad-dashboard
