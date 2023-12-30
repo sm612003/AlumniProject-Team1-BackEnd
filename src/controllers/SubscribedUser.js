@@ -1,6 +1,6 @@
 // Import necessary modules
 import { PrismaClient } from '@prisma/client';
-
+import {sendWelcomeEmail} from '../controllers/MailSend.js'
 const prisma = new PrismaClient();
 
 // Create a new subscribed user
@@ -18,7 +18,7 @@ export const createSubscribedUser = async (req, res) => {
         NewsLetterId,
       },
     });
-
+    await sendWelcomeEmail(email)
     return res.status(201).json({
       message: `Subscribed user with email ${newSubscribedUser.email} created successfully`,
       data: newSubscribedUser,
