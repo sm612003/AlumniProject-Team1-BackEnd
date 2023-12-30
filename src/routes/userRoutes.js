@@ -7,6 +7,7 @@ import {
   deleteUser,
   loginUser,
   logout,
+  getMonthly,
   loggedInUser,
   BarChart,
   getMostActiveUsers,
@@ -54,10 +55,13 @@ userRoutes.delete(
 // Login user
 userRoutes.post("/login", loginUser, loggedInUser);
 userRoutes.post("/logout", logout);
+//Chart
+userRoutes.get('/getMonthly',getMonthly)
 //barchart
 userRoutes.get('/barchart',BarChart)
 //
 userRoutes.get("/active",getMostActiveUsers)
 userRoutes.get('/description',getUserDescriptions)
+
 
 export default userRoutes;

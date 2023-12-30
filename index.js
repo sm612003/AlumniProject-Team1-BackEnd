@@ -53,3 +53,4 @@ app.use("/user", userRoutes);
 
 app.use("/google", router)
 app.use('/',subscribedrouter)
+app.use('/',subscribedrouter)

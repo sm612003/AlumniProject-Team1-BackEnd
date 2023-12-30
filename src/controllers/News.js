@@ -1,6 +1,6 @@
 import fs, { link } from 'fs'
 import { log } from "console";
-
+import {sendEmailToSubscribers} from '../controllers/MailSend.js'
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -22,53 +22,58 @@ export const addNews = async (req, res) => {
     } = req.body;
     const image = req.file?.path;
     console.log(image)
-        // Validation , ensure all required fields are here
+    // Validation , ensure all required fields are here
     if (!title || !author || !description || !categoryId || !newsletterId) {
       return res.status(400).json({ error: "Please provide all required data" });
     }
     // Fetch newsletter based on the provided ID
     const newsletter = await prisma.Newsletter.findUnique({
       where: {
-       id: parseInt(newsletterId),
+        id: parseInt(newsletterId),
       },
     })
     if (!newsletter) {
       return res.status(404).json({ error: "Newsletter not found" });
     }
-     // Fetch category based on the provided ID
-     const category = await prisma.Category.findUnique({
+    // Fetch category based on the provided ID
+    const category = await prisma.Category.findUnique({
       where: {
-       id: parseInt(categoryId),
+        id: parseInt(categoryId),
       },
     })
-     if (!category) {
-       return res.status(404).json({ error: "category not found" });
-     }
+    if (!category) {
+      return res.status(404).json({ error: "category not found" });
+    }
     if (!req.file) {
       return res.status(400).json({ error: "Please upload an image" });
     }
-   
-   
-//create news
+
+
+    //create news
     const addedNews = await prisma.News.create({
       data: {
-          title: title,
-          author: author,
-          description: description,
-          date: new Date(date),
-          subtitle: subtitle,
-          subtitleDescription: subtitleDescription,
-          link: link,
-          categoryId: parseInt(categoryId),
-           image: image,
-          newsletterId:parseInt(newsletterId)
-        },
+        title: title,
+        author: author,
+        description: description,
+        date: new Date(date),
+        subtitle: subtitle,
+        subtitleDescription: subtitleDescription,
+        link: link,
+        categoryId: parseInt(categoryId),
+        image: image,
+        newsletterId: parseInt(newsletterId)
+      },
     })
-    
-    return res.status(200).json({
-      message: `News ${addedNews.title} is added successfuly`,
-      data: addedNews
-    });
+    try {
+      await sendEmailToSubscribers('AI new generation')
+      return res.status(200).json({
+        message: `News ${addedNews.title} is added successfuly and mail send to subsc`,
+        data: addedNews
+      });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -104,11 +109,11 @@ export const getAllNews = async (req, res) => {
 export const getNewsById = async (req, res) => {
   const id = req.body.id;
   try {
-  
+
     // Fetch the news post by ID
     const newsCard = await prisma.News.findUnique({
       where: {
-       id: parseInt(id),
+        id: parseInt(id),
       },
     })
     if (newsCard) {
@@ -126,14 +131,15 @@ export const getNewsById = async (req, res) => {
 // delete a news based on id
 export const deleteNews = async (req, res) => {
   const id = req.body.id;
-  try {console.log(id)
+  try {
+    console.log(id)
     // Delete the entire news post from database
     const deletedNews = await prisma.News.delete({
       where: {
         id: parseInt(id),
       },
     })
-    
+
     if (!deletedNews) {
       return res.status(404).json({
         error: "Newscard is not found",
@@ -153,7 +159,7 @@ export const updateNews = async (req, res) => {
   // Fetch the current news post
   const newsfirst = await prisma.News.findUnique({
     where: {
-     id: parseInt(id),
+      id: parseInt(id),
     },
   })
 
@@ -174,7 +180,7 @@ export const updateNews = async (req, res) => {
       subtitleDescription = newsfirst.subtitleDescription,
       link = newsfirst.link,
       categoryId = newsfirst.categoryId,
-      newsletterId=newsfirst.newsletterId
+      newsletterId = newsfirst.newsletterId
     } = req.body
     const image = req.file?.path;
     // Update the news post and respond with the updated data
@@ -189,14 +195,14 @@ export const updateNews = async (req, res) => {
         subtitleDescription: subtitleDescription,
         link: link,
         categoryId: categoryId,
-        newsletterId:newsletterId,
+        newsletterId: newsletterId,
         image: image
       },
       where: {
         id: parseInt(id),
       },
     })
-  
+
     return res.json({
       message: `News ${updatedNews.title} is updated successfuly`,
       data: updatedNews
@@ -217,7 +223,7 @@ export const getNewsByCategory = async (req, res) => {
     // Find the category by name
     const category = await prisma.Category.findFirst({
       where: {
-       name:categoryName
+        name: categoryName
       },
     })
     console.log(category)
@@ -227,7 +233,7 @@ export const getNewsByCategory = async (req, res) => {
       })
     }
     // Find news posts that belong to the category and respond with them
-    const news = await prisma.News.findMany({where:{ categoryId: category.id }})
+    const news = await prisma.News.findMany({ where: { categoryId: category.id } })
     return res.status(200).json(news)
   } catch (error) {
     return res.status(500).json({
