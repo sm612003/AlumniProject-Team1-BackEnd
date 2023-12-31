@@ -116,7 +116,21 @@ export const deleteSubscribedUser = async (req, res) => {
 //   }
 // };
 
-
+//get by email
+export const getSubscribedUserByEmail = async (req, res) => {
+  const {email}=req.params;
+  try {
+    const subscribedUser = await prisma.SubscribedUser.findUnique({
+      where: {email:email},
+    });
+if(subscribedUser){
+      return res.status(200).json({message:'success',data:subscribedUser});}
+      else res.status(200).json({message:'failed',data:subscribedUser});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 //getUser By Month 
 export const getSubscribersMonthly = async (req, res) => {
   let usersNumber = []
