@@ -290,6 +290,11 @@ export const getMostActiveUsers = async (req, res) => {
       include: {
         blogs: true, // Include the blogs relationship
       },
+      where: {
+        blogs: {
+          some: {} // This ensures that the user has at least one blog
+        }
+      }
     });
 
     res.json(mostActiveUsers);
