@@ -181,7 +181,7 @@ export const addBlog = async (req, res) => {
   try {
     const { author, title, content } = req.body;
     const image = req.file.path;
-     const userId = req.user?.id;
+    const userId = req.user?.id;
 
     if (!author || !title || !content) {
       return res.json({
@@ -200,7 +200,7 @@ export const addBlog = async (req, res) => {
         content,
         image,
         user: {
-          connect: { id: userId }, // Connect to an existing user because we havev relation in betweein blog and user 
+          connect: { id: userId },
         },
       },
     });
@@ -280,7 +280,7 @@ export const deleteBlog = async (req, res) => {
 // Update blog by id
 // Update blog by id
 export const updateBlog = async (req, res) => {
-  const id = parseInt(req.body.id);
+  const id = parseInt(req.params.id);
   try {
     const existingBlog = await prisma.Blog.findUnique({
       where: { id },

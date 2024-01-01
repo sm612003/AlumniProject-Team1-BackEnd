@@ -10,8 +10,9 @@ blogRouter.get('/read/blogs',getAllBlogs);
 blogRouter.get('/read/blogsById/:id', getBlogById);
 blogRouter.post('/add/blogs',authenticateUser,
 authorizeUser(["admin","user"]),upload.single("image") , addBlog ) ;
-blogRouter.patch('/update/blogs',authenticateUser,
+blogRouter.patch('/update/blogs/:id',authenticateUser,
 authorizeUser(["admin","user"]),upload.single("image") , updateBlog);
+
 blogRouter.delete('/delete/blogs/:id',authenticateUser,
 authorizeUser(["admin","user"]), deleteBlog);
 // blogRouter.get('/read/blogs/byCategory', getBlogsByCategory);

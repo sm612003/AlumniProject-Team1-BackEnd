@@ -156,6 +156,7 @@ export const deleteNews = async (req, res) => {
 // update news 
 export const updateNews = async (req, res) => {
   const id = req.body.id;
+  
   // Fetch the current news post
   const newsfirst = await prisma.News.findUnique({
     where: {
@@ -194,19 +195,21 @@ export const updateNews = async (req, res) => {
         subtitle: subtitle,
         subtitleDescription: subtitleDescription,
         link: link,
-        categoryId: categoryId,
-        newsletterId: newsletterId,
+        categoryId: parseInt(categoryId),
+    newsletterId: parseInt(newsletterId),
         image: image
       },
       where: {
         id: parseInt(id),
       },
     })
+    console.log('Updated News:', updatedNews);
 
     return res.json({
       message: `News ${updatedNews.title} is updated successfuly`,
       data: updatedNews
     })
+    
   } catch (error) {
     return res.status(500).json({
       error: `Error, ${error.message}`
