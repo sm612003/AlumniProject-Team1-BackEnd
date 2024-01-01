@@ -1,6 +1,6 @@
 // Import necessary modules and controllers
 import express from 'express';
-import { createSubscribedUser, getAllSubscribedUsers, getSubscribedUserById, deleteSubscribedUser,getSubscribersMonthly} from '../controllers/SubscribedUser.js';
+import { createSubscribedUser, getAllSubscribedUsers, getSubscribedUserById, deleteSubscribedUser,getSubscribersMonthly,getSubscribedUserByEmail} from '../controllers/SubscribedUser.js';
 
 const subscribedrouter = express.Router();
 
@@ -11,6 +11,7 @@ subscribedrouter.get('/getall/subscribedUsers', getAllSubscribedUsers);
 subscribedrouter.get('/subscribedUsers/:id', getSubscribedUserById);
 subscribedrouter.delete('/delete/subscribedUsers/:id', deleteSubscribedUser);
 subscribedrouter.get('/getSubscribersMonthly', getSubscribersMonthly);
+subscribedrouter.get('/getSubscribedUserByEmail/:email', getSubscribedUserByEmail);
 
 // router.put('/subscribedUsers/:id', updateSubscribedUser);
 
