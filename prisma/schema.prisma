@@ -65,7 +65,7 @@ model User {
   lastName    String   @db.VarChar(255)
   email       String   @unique @db.VarChar(255)
   password    String   @db.VarChar(255)
-  description String?  @db.VarChar(255)
+  description Description? 
   dob         DateTime @default(now())
   Link        String?
   image       String?  @db.VarChar(255)
@@ -73,6 +73,15 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
   blogs       Blog[]
+}
+
+
+enum Description {
+ SOFTWARE_DEVELOPMENT @map("Software Development")
+  DATA_ANALYTICS @map("Data Analytics")
+  USER_INTERFACE_DESIGN @map("User Interface Design")
+  NETWORK_INFRASTRUCTURE @map("Network Infrastructure")
+  DEVOPS
 }
 
 model SubscribedUser {
