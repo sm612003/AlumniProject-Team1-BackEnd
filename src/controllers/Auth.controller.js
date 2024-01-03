@@ -67,9 +67,11 @@ export const google = async (req, res, next) => {
     });
 
     if (user) {
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: user.id , role:user.role }, process.env.JWT_SECRET);
+      console.log("Generated Token:", token);
+
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("token", token, { httpOnly: true })
         .status(200)
         .json({ user: { ...user, password: undefined }, token });
     } else {
@@ -95,9 +97,9 @@ export const google = async (req, res, next) => {
         },
       });
 
-      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: newUser.id, role:newUser.role }, process.env.JWT_SECRET);
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("token", token, { httpOnly: true })
         .status(200)
         .json({ user: { ...newUser, password: undefined }, token });
     }
