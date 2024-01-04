@@ -107,9 +107,8 @@ export const getAllNews = async (req, res) => {
 
 // see a new based on id
 export const getNewsById = async (req, res) => {
-  const id = req.body.id;
+  const id = req.params.id;
   try {
-
     // Fetch the news post by ID
     const newsCard = await prisma.News.findUnique({
       where: {
