@@ -8,7 +8,7 @@ import {
 const newsRouter =express.Router()
 
 newsRouter.get('/read/news', getAllNews);
-newsRouter.get('/read/newsById', getNewsById);
+newsRouter.get('/read/newsById/:id', getNewsById);
 newsRouter.post('/add/news',authenticateUser,authorizeUser(['admin']),  upload.single("image") , addNews);
 newsRouter.patch('/update/news/:id', authenticateUser,authorizeUser(['admin']), upload.single("image") , updateNews);
 newsRouter.delete('/delete/news' ,authenticateUser, authorizeUser(['admin']),deleteNews)
