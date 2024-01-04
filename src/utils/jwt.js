@@ -8,12 +8,12 @@ export const generateToken = (user) => {
         email: user.email ,
         role: user.role,
     }
-    return jwt.sign(payload , "secretKey" , {expiresIn: '4h'})
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "4h" });
 }
  // utils
 export const verifyToken = (token) => {
     try {
-        return jwt.verify(token , "secretKey")
+        return jwt.verify(token, process.env.JWT_SECRET);
     } catch (error){
         return null
     }

@@ -18,7 +18,7 @@ export const google = async (req, res, next) => {
       console.log("Generated Token:", token);
 
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("token", token, { httpOnly: true })
         .status(200)
         .json({ user: { ...user, password: undefined }, token });
     } else {
@@ -49,7 +49,7 @@ export const google = async (req, res, next) => {
         process.env.JWT_SECRET
       );
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("token", token, { httpOnly: true })
         .status(200)
         .json({ user: { ...newUser, password: undefined }, token });
     }
