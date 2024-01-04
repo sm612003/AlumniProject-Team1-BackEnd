@@ -1,4 +1,3 @@
-
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -12,7 +11,10 @@ export const google = async (req, res, next) => {
     });
 
     if (user) {
-      const token = jwt.sign({ id: user.id , role:user.role }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET
+      );
       console.log("Generated Token:", token);
 
       res
@@ -42,7 +44,10 @@ export const google = async (req, res, next) => {
         },
       });
 
-      const token = jwt.sign({ id: newUser.id, role:newUser.role }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: newUser.id, role: newUser.role },
+        process.env.JWT_SECRET
+      );
       res
         .cookie("token", token, { httpOnly: true })
         .status(200)
