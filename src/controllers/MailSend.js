@@ -8,8 +8,8 @@ const prisma = new PrismaClient();
         port: 587,
         secure: false,
         auth: {
-            user: 'jammal.souheir@gmail.com',
-            pass: 'ztjcafkhylogzzjn',
+            user: process.env.EMAIL_SUBSCRIBE,
+            pass: process.env.PASSW_SUBSCRIBE,
         },
     });
 
@@ -27,7 +27,7 @@ const sendEmailToSubscribers = async (newsTitle) => {
             const mailOptions = {
                 from: {
                     name: 'techNow',
-                    address: 'jammal.souheir@gmail.com'
+                    address:  process.env.EMAIL_SUBSCRIBE
                 },
                 to: user.email,
                 subject: 'New News Alert',
@@ -57,19 +57,11 @@ const sendWelcomeEmail = async (userEmail) => {
     const mailOptions = {
         from: {
             name: 'techNow',
-            address: 'jammal.souheir@gmail.com'
+            address:  process.env.EMAIL_SUBSCRIBE
         },
         to: userEmail,
         subject: 'Welcome to Our Newsletter',
-        text: `Dear ${userEmail},
-
-        Welcome to our newsletter! We're excited to have you on board.
-
-        Stay tuned for the latest news and updates from techNow.
-
-        Best regards,
-        techNow Team`,
-    };
+        text:`Dear ${userEmail},\n\nWelcome to our newsletter! We're excited to have you on board.\nStay tuned for the latest news and updates from techNow.\n\nBest regards,\ntechNow Team`};
 
     try {
         const info = await transporter.sendMail(mailOptions);
