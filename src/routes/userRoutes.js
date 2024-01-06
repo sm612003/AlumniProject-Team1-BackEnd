@@ -37,7 +37,7 @@ userRoutes.get("/view-one/:id", showOneUser);
 
 // Update a user
 userRoutes.patch(
-  "/update",
+  "/update/:id",
   authenticateUser,
 
   upload.single("image"),
