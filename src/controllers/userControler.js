@@ -15,19 +15,15 @@ export const createUser = async (req, res) => {
   if (
     !firstName ||
     !lastName ||
-    !dob ||
     !email ||
     !password ||
-    !role ||
-    !description ||
-    !Link
+    !role 
   ) {
-    return res.status(400).send("All fields are required!");
-  }
+    return res.status(400).send("firstName,lastName,enail,password are required !!")}
 
-  if (!req.file) {
-    return res.status(400).json({ error: "Please upload an image" });
-  }
+  // if (!req.file) {
+  //   return res.status(400).json({ error: "Please upload an image" });
+  // }
 
   try {
     const hashedPassword = await hashPassword(password);
